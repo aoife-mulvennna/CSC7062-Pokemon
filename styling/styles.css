@@ -1,0 +1,22 @@
+.first-page-option {
+    background-color: rgb(254, 86, 86);
+    padding: 5%;
+    border-radius: 10%;
+    width: 15%;
+    text-align: center;
+    margin-left: 40%;
+    margin-top: 1%;
+    font-size: 20px;
+    text-align: center;
+    text-wrap: nowrap;
+  /* font-family: 'Courier New', Courier, monospace; */
+
+}
+
+button{
+    font-size: 20px;
+}
+
+/* html, body{
+    background: linear-gradient(yellow,white);
+} */
