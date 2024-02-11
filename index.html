@@ -1,23 +1,41 @@
 <!DOCTYPE html>
 <html lang="en">
 
+<!-- This page is the index page which contains buttons to log in, sign up or enter the web page as a guest -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./styling/styles.css"/>
+
+    <link rel="stylesheet" href="./styling/styles.css" />
+
     <title>Home page</title>
 </head>
 
 <body>
-    <h1>This is the home page for my TCG assignment
-        <img src="/images/Pokemon-Logo.jpeg">
+    <p class="logo"> <img class="pokemon-logo" src="/images/Pokémon_Logo.png"></p>
+
+    <h1 class="welcome">Welcome to the pokemon trading game!
+
     </h1>
-    <div class="first-page-option"><p>what would you like to do?</p>
-        <button class="sign-in">sign in</button>
-        <button class="create-acc">create account</button>
+    <div class="first-page-options">
+        <p>What would you like to do?
+        </p>
+        <p class="log-sign"> <a href="./pages/login.html" class="button login-button">Login</a>
+            <a href="./pages/sign-up.html" class="button signup-button">Create Account</a>
+        </p>
+        <p class="guest"><a href="./guest-views/home.html" class="button guest-button">Enter as Guest</a></p>
+
+        <!-- <button class="sign-in">sign in</button>
+        <button class="create-acc">create account</button> -->
     </div>
 
 
+
+
+
+
 </body>
+
+
 
 </html>

@@ -1,0 +1,53 @@
+body {
+    background: linear-gradient(green,blue);
+    background-repeat: no-repeat;
+    background-size: cover;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* Navigation bar */
+
+.navbar {
+    background-color: rgba(214, 210, 210, 0);
+    padding: 10px;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
+    color: white;
+}
+
+ul {
+    margin: 0;
+    padding: 0;
+
+}
+
+li {
+    display: inline-block;
+    padding: 5px ;
+    width: 10%;
+    text-align: left;
+    background-color: red;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: black;
+}
+
+.navbar a:hover {
+   color:white;
+    padding: 5px;
+    width: 10%;
+}
+
+li:hover {
+    width: 10%;
+    background-color: rgb(121, 117, 117);
+    padding: 5px ;
+    width: 10%;
+}
+
