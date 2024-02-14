@@ -148,8 +148,9 @@ label {
 }
 
 .sign-up-container {
+    margin-top: 3%;
     width: 50%;
-    height: 50%;
+    height: 60%;
     padding: 10px;
     font-weight: bold;
     border-radius: 10px;

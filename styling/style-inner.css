@@ -1,5 +1,5 @@
 body {
-    background: linear-gradient(green,blue);
+    background: repeating-linear-gradient(green, blue);
     background-repeat: no-repeat;
     background-size: cover;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
@@ -24,7 +24,7 @@ ul {
 
 li {
     display: inline-block;
-    padding: 5px ;
+    padding: 5px;
     width: 10%;
     text-align: left;
     background-color: red;
@@ -39,7 +39,7 @@ li {
 }
 
 .navbar a:hover {
-   color:white;
+    color: white;
     padding: 5px;
     width: 10%;
 }
@@ -47,7 +47,40 @@ li {
 li:hover {
     width: 10%;
     background-color: rgb(121, 117, 117);
-    padding: 5px ;
+    padding: 5px;
     width: 10%;
 }
 
+.sign-out {
+    display: inline-flex;
+    margin-left: 94%;
+    background-color: rgba(81, 0, 255, 0.881);
+    margin-top: 0px;
+    padding: 5px;
+    border-radius: 5px;
+}
+
+.sign-out a {
+    text-decoration: none;
+    color: white;
+    font-weight: 535;
+}
+
+.pokemon-logo {
+    display: flex;
+    width: 20%;
+}
+
+table {
+    background-color: rgba(255, 255, 255, 0.643);
+    width: 70%;
+    padding: 2%;
+    border-radius: 10px;
+    margin-left: 15%;
+    color: black;
+}
+
+th {
+    text-align: left;
+    padding-bottom: 5px;
+}
