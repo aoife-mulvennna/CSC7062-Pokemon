@@ -1,30 +1,62 @@
 .pokemon-logo,
 .first-page-options,
-.welcome {
+.welcome,
+.login-container,
+.sign-up-container {
     position: absolute;
     left: 50%;
+
+}
+
+.welcome,
+.logo,
+.login-container input[type="text"],
+.login-container input[type="password"],
+.sign-up-container input[type="text"],
+.sign-up-container input[type="password"],
+.sign-up-container input[type="date"],
+.login-container button,
+.sign-up-container button {
+    width: 100%;
+}
+
+.pokemon-logo,
+.first-page-options,
+.welcome {
     transform: translate(-50%);
 
+}
+
+.welcome,
+.login-container input[type="text"],
+.login-container input[type="password"],
+.sign-up-container input[type="text"],
+.sign-up-container input[type="password"],
+.sign-up-container input[type="date"],
+.login-container button,
+.sign-up-container button,
+.sign-up-container {
+    padding: 10px;
 }
 
 .welcome {
     color: rgb(151, 2, 49);
     margin-top: 125px;
     margin-left: 25%;
-    width: 100%;
-    padding: 10px;
 
 }
 
 .logo {
     margin: 0px;
-    width: 100%;
     padding: 30px;
 }
 
 
-.pokemon-logo {
-    width: 25%
+.pokemon-logo,
+.first-page-options,
+.login-container
+{
+width: 25%;
 }
 
 body {
@@ -35,25 +67,24 @@ body {
 
 }
 
+.first-page-options,
+.login-container,
+.sign-up-container h2 {
+    text-align: center;
+}
 
 .first-page-options {
     background-color: rgba(255, 208, 1, 0.845);
     margin-top: 50px;
     top: 30%;
-    text-align: center;
-
 }
 
 .first-page-options,
 .login-container {
     padding: 2%;
     border-radius: 10%;
-    width: 25%;
     font-size: 20px;
     text-wrap: wrap;
-
-
-
 }
 
 .button {
@@ -63,24 +94,24 @@ body {
     text-decoration: none;
     border-radius: 5px;
     color: white;
+}
+
+.button,
+.sign-up-container {
     margin-top: 3%;
 }
 
-.signup-button {
-    background-color: green;
-    width: 125px;
 
-
-}
-
+.signup-button,
 .login-button {
-    background-color: rgb(78, 78, 248);
+    background-color: rgb(0, 128, 234);
     width: 125px;
+
 
 }
 
 .guest-button {
-    background-color: rgb(216, 100, 249);
+    background-color: rgb(93, 204, 53);
     width: 200px;
 
 }
@@ -94,9 +125,7 @@ html {
 .login-container,
 .sign-up-container {
 
-    position: absolute;
     top: 50%;
-    left: 50%;
     transform: translate(-50%, -50%);
     background-color: rgb(255, 208, 1);
 
@@ -104,14 +133,19 @@ html {
 
 .login-container,
 .sign-up-container h2 {
-    text-align: center;
     margin-bottom: 20px;
     margin-top: 0px;
-    text-align: center;
+}
+
+Label,
+.login-container button,
+.sign-up-container button,
+.sign-up-container {
+    font-weight: bold;
+
 }
 
 label {
-    font-weight: bold;
     padding: 5px;
     text-align: left;
 }
@@ -121,25 +155,29 @@ label {
 .sign-up-container input[type="text"],
 .sign-up-container input[type="password"],
 .sign-up-container input[type="date"] {
-    width: 100%;
-    padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #ccc;
-    border-radius: 3px;
     box-sizing: border-box;
 }
 
 .login-container button,
 .sign-up-container button {
-    font-weight: bold;
     /* font-size: 17px; */
-    width: 100%;
-    padding: 10px;
+
     background-color: #007bff;
     border: none;
-    border-radius: 3px;
+
     color: #fff;
     cursor: pointer;
+}
+
+.login-container button,
+.sign-up-container button,
+.login-container input[type="password"],
+.sign-up-container input[type="text"],
+.sign-up-container input[type="password"],
+.sign-up-container input[type="date"] {
+    border-radius: 3px;
 }
 
 .login-container button:hover,
@@ -148,11 +186,8 @@ label {
 }
 
 .sign-up-container {
-    margin-top: 3%;
     width: 50%;
     height: 60%;
-    padding: 10px;
-    font-weight: bold;
     border-radius: 10px;
 }
 
@@ -162,6 +197,7 @@ a.button.back-button {
     background-color: rgba(138, 249, 175, 0.546);
     color: rgb(0, 115, 39);
 }
-a.button.back-index-button{
+
+a.button.back-index-button {
     display: flexbox inline-block;
-}
+} */
