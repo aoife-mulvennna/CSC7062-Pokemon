@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- This page is the index page which contains buttons to log in, sign up or enter the web page as a guest -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/styling/mystyle.css">
+
+    <title>Pokemon Trading Card Game</title>
+</head>
+
+<body class="thisisbody">
+    <p>
+        <!-- <div class="logo">  <img class="logo" src="./images/Pokemon_Logo.png" alt="logo"></div> -->
+    <div class=""> <img class="logo" src="<%=logoPath %>" alt="logo"></div>
+    </p>
+
+    <h1>Welcome to the pokemon trading game!
+
+    </h1>
+    <div class="container">
+        <div class="container border bg-warning rounded align-middle text-center w-50">
+            <p class="font-weight-bold">
+                What would you like to do?
+            </p>
+            <p>
+                <a href="/login" class="btn btn text-white bg-primary">Login</a>
+
+                <a href="./pages/sign-up.html" class="btn btn text-white bg-primary">Create Account</a>
+            </p>
+            <p>
+                <a href="./guest-views/home.html" class="btn btn text-white bg-secondary">Enter as Guest</a>
+            </p>
+
+        </div>
+
+    </div>
+</body>
+
+</html>

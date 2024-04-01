@@ -1,0 +1,20 @@
+{
+  "name": "csc7062-pokemon",
+  "version": "1.0.0",
+  "description": "This is the repository for my Web Development Assignment for CSC7062",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "ejs": "^3.1.9",
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
