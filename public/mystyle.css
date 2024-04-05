@@ -1,12 +1,7 @@
-.thisisbody {
-       /* Override Bootstrap's default background properties */
-       background-color: transparent !important;
-    background-image: url('<%= backgroundPath %>') !important;
-    /* Set the background image using the backgroundPath variable */
-    background-size: cover !important;
-    /* Cover the entire background */
-    background-position: center !important;
-    /* Center the background image */
- 
-    /* You can add more background properties here if needed */
+html{
+    background-image: url('/background-2.png');
+    background-size: cover;
+}
+body{
+    background-color: transparent;
 }

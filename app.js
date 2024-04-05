@@ -7,6 +7,7 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static('public'));
 
+
 app.get('/', (req, res) => {
 
     res.render('main', { logoPath: 'Pokemon_Logo.png', backgroundPath: 'background-2.png' });
@@ -45,7 +46,7 @@ app.get('/login', (req, res) => {
 });
 
 
-app.get('sign-up', (req, res) => {
+app.get('/sign-up', (req, res) => {
 
     res.render('sign-up', { logoPath: 'Pokemon_Logo.png', backgroundPath: 'background-2.png' });
 

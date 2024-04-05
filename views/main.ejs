@@ -7,39 +7,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="/styling/mystyle.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/mystyle.css">
 
     <title>Pokemon Trading Card Game</title>
 </head>
 
-<body class="thisisbody">
-    <p>
-        <!-- <div class="logo">  <img class="logo" src="./images/Pokemon_Logo.png" alt="logo"></div> -->
-    <div class=""> <img class="logo" src="<%=logoPath %>" alt="logo"></div>
-    </p>
 
-    <h1>Welcome to the pokemon trading game!
+<body>
+    <div class="position-relative w-100 vh-100">
 
-    </h1>
-    <div class="container">
-        <div class="container border bg-warning rounded align-middle text-center w-50">
-            <p class="font-weight-bold">
+        <div class="position-absolute top-50 start-50 translate-middle w-50">
+            <div class="border bg-warning rounded text-center w-100 pt-3">
+
+                <img class="logo" src="<%=logoPath %>" alt="logo">
+
+                <div class="container start-50">
+                    <h4 class="text-center">
+                        Welcome to the pokemon trading game!
+                    </h4>
+                </div>
+
+                <!-- <p class="font-weight-bold">
                 What would you like to do?
-            </p>
-            <p>
-                <a href="/login" class="btn btn text-white bg-primary">Login</a>
+            </p> -->
+                <p>
+                    <a href="/login" class="btn btn text-white bg-primary">Login</a>
 
-                <a href="./pages/sign-up.html" class="btn btn text-white bg-primary">Create Account</a>
-            </p>
-            <p>
-                <a href="./guest-views/home.html" class="btn btn text-white bg-secondary">Enter as Guest</a>
-            </p>
+                    <a href="/sign-up" class="btn btn text-white bg-primary">Create Account</a>
+                </p>
+                <p>
+                    <a href="" class="btn btn text-white bg-secondary">Enter as Guest</a>
+                </p>
 
+
+            </div>
         </div>
-
     </div>
+
 </body>
 
 </html>
