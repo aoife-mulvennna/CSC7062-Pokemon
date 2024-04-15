@@ -10,16 +10,31 @@
 </head>
 
 <body>
-    <div class=""> <img class="logo" src="<%=logoPath %>" alt="logo"></div>
-    <nav class="navbar navbar-default">
-        <ul class="nav nav-tabs">
-            <li><button type="button" class="btn btn active"><a href="/login.ejs">Home</a></button></li>
-            <li><button type="button" class="btn btn"><a href="guest-view-cards.html">View Cards</a></button></li>
-            <li><button type="button" class="btn btn"><a href="guest-about.html">About</a></button></li>
-            <li><button type="button" class="btn btn"><a href="/pages/sign-up.html">Create an Account</a></button></li>
-            <li><button type="button" class="btn btn"><a href="/pages/login.html">Login to Account</a></button></li>
-        </ul>
-    </nav>
+  
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">
+            <img class="logo" src="<%=logoPath %>" alt="logo">
+          </a>
+    
+          </button>
+          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+            <div class="navbar-nav">
+              <a class="nav-link active" aria-current="page" href="home">Home</a>
+              <a class="nav-link"  href="view-cards">Browse Cards</a>
+              <a class="nav-link" href="#">Browse Collections</a>
+              <a class="nav-link" href="#">About</a>
+              <a class="nav-link" href="sign-up">Create an Account</a>
+              <a class="nav-link" href="login">Login to Account</a>
+              <form class="d-flex">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-dark" type="submit">Search</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </nav>
     <h2> Guest Home Page </h2>
 
     <p>

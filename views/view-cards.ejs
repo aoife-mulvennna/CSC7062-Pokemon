@@ -1,53 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Cards</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Cards</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 </head>
+
 <body>
-  <nav class="demo">
-    <a href="/" class="brand">
-      <span>   <img class="logo" src="<%=logoPath %>" alt="logo"></span>
-    </a>
-  
-  
 
-    <nav class="navbar navbar-default">
-        <ul class="nav nav-tabs">
-            <li><button type="button" class="btn btn active"><a href="home.html">Home</a></button></li>
-            <li><button type="button" class="btn btn"><a href="guest-view-cards.html">View Cards</a></button></li>
-            <li><button type="button" class="btn btn"><a href="guest-about.html">About</a></button></li>
-            <li><button type="button" class="btn btn"><a href="/pages/sign-up.html">Create an Account</a></button></li>
-            <li><button type="button" class="btn btn"><a href="/pages/login.html">Login to Account</a></button></li>
-        </ul>
-    </nav>
-  </nav>
-  
-  </div>
-  <div style="width:80%; margin: 0 auto; padding-top: 100px;">
-    <h2><%= titletext %></h2>
-    
-    <h3>View Pokemon Cards...</h3>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <img class="logo" src="<%=logoPath %>" alt="logo">
+      </a>
 
-     <div class="flex one two-600 three-800 four-1000"> 
-
-  
-        <% bdata['data'].forEach( (pokemon)=>{   %>
-            <div>
-                <header><%= pokemon.name %></header>
-                <p><%=pokemon.type%></p>
-             <p><%=pokemon.rarity%></p>
-             <a class="button" href="/details?card=<%=pokemon.id%>">details</a>
-            </div>
-        <% }); %>
-
-
-
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-link" href="home">Home</a>
+          <a class="nav-link active" aria-current="page" href="">Browse Cards</a>
+          <a class="nav-link" href="#">Browse Collections</a>
+          <a class="nav-link" href="#">About</a>
+          <a class="nav-link" href="sign-up">Create an Account</a>
+          <a class="nav-link" href="login">Login to Account</a>
+          <form class="d-flex">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-dark" type="submit">Search</button>
+          </form>
+        </div>
+      </div>
     </div>
-  </div>
+  </nav>
+
+  <h1>Pokemon Cards</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Image</th>
+        <th>HP</th>
+        <th>Stage</th>
+        <th>Attack</th>
+        <th>Rarity</th>
+        <th>Weakness</th>
+        <th>Set Name</th>
+        <th>Evolves From</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% cards.forEach(card=> { %>
+        <tr>
+          <td>
+            <%= card.pokemon_name %>
+          </td>
+          <td>
+            <%= card.pokemon_type_name %>
+          </td>
+          <td><img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="100"></td>
+          <td>
+            <%= card.hp %>
+          </td>
+          <td>
+            <%= card.pokemon_stage_name %>
+          </td>
+          <td>
+            <%= card.attack %>
+          </td>
+          <td>
+            <%= card.rarity %>
+          </td>
+          <td>
+            <%= card.weakness %>
+          </td>
+          <td>
+            <%= card.pokemon_set_name %>
+          </td>
+          <td>
+            <%= card.evolve_from || '-' %>
+          </td>
+          <td><button type="button" class="btn btn-secondary">Favourite</button></td>
+          <td><button type="button" class="btn btn-secondary">Add to collection</button></td>
+        </tr>
+        <% }); %>
+    </tbody>
+  </table>
 </body>
+
 </html>
