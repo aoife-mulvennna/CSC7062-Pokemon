@@ -3,6 +3,9 @@ const app = express();
 
 const mysql = require('mysql2');
 
+// for encrypting passwords
+const bcrypt = require('bcrypt');
+
 app.set('view engine', 'ejs');
 
 app.use(express.static('public'));
@@ -13,13 +16,14 @@ const sessions = require('express-session');
 
 const oneHour = 1000 * 60 * 60 * 1;
 
+
 app.use(cookieParser());
 
 app.use(sessions({
-   secret: "mypokemon12",
-   saveUninitialized: true,
-   cookie: { maxAge: oneHour },
-   resave: false
+    secret: "mypokemon12",
+    saveUninitialized: true,
+    cookie: { maxAge: oneHour },
+    resave: false
 }));
 
 
@@ -60,24 +64,39 @@ app.get('/view-cards', (req, res) => {
     });
 });
 
+app.get('/view-collection', (req, res) => {
+    let sess_obj = req.session;
+    const uid = sess_obj.authen;
+    const query = ` SELECT user.username, pokemon_card.* FROM user INNER JOIN collection ON user.user_id = collection.user_id
+INNER JOIN card_collection ON collection.collection_id = card_collection.collection_id
+INNER JOIN pokemon_card ON card_collection.card_id = pokemon_card.pokemon_card_id WHERE user.user_id = "${uid}"`;
+
+    db.query(query, (err, results) => {
+
+        if (err) throw err;
+        const username = results.length > 0 ? results[0].username : '';
+        // res.render('view-collection', { cards: results, logoPath: 'Pokemon_Logo.png' });
+        res.render('view-collection', { cards: results, username: username, logoPath: 'Pokemon_Logo.png' });
+
+    });
+});
 
 // renders home view 
 app.get('/home', (req, res) => {
-    const sessionobj = req.session;
-   
-    if(sessionobj.authen){
-        const uid = sessionobj.authen;
+    // const sessionobj = req.session;
+    let sess_obj = req.session;
+    console.log(sess_obj);
+    if (sess_obj.authen) {
+        const uid = sess_obj.authen;
         const user = `SELECT * FROM user WHERE user_id = "${uid}"`;
 
-        db.query(user, (err, row)=>{
+        db.query(user, (err, row) => {
             const firstrow = row[0];
-            res.render('home', { logoPath: 'Pokemon_Logo.png', userdata:firstrow});
-        })
-   
-    } else{
+            res.render('home', { logoPath: 'Pokemon_Logo.png', userdata: firstrow });
+        });
+    } else {
         res.send("Acccess Denied");
     }
-
 });
 
 // renders login
@@ -90,27 +109,45 @@ app.get('/login', (req, res) => {
 
 
 
-app.post('/', (req, res) => {
-    const username = req.body.usernameField;
-// const password = req.body.passwordField;
+app.post('/login', (req, res) => {
+    const { usernameField, passwordField } = req.body;
 
-    const checkuser = `SELECT * FROM user WHERE username = "${username}"`;
-    db.query(checkuser, (err, rows) => {
-        if (err) throw err;
-        const numRows = rows.length;
+    const query = `SELECT * FROM user WHERE username = '${usernameField}'`;
 
-        if (numRows > 0) {
-            const sessionobj = req.session;  
-            sessionobj.authen = rows[0].id; 
-            res.redirect('/home');
-
-        } else {
-            res.redirect('/');
-
+    db.query(query, (err, results) => {
+        if (err) {
+            console.error('Error querying database: ', err);
+            res.status(500).send('Internal Sever Error');
+            return;
         }
 
+        if (results.length === 0) {
+            res.status(401).send('Username or password is incorrect');
+            return;
+        }
+
+        // comparing the hashed password with the input password
+        const hashedPassword = results[0].password;
+
+        bcrypt.compare(passwordField, hashedPassword, (bcryptErr, isMatch) => {
+            if (bcryptErr) {
+                console.error('Error comparing passwords:', bcryptErr);
+                res.status(500).send('Internal Sever Error');
+                return;
+            }
+
+            // if the passwords match, it means they can log in!
+            if (isMatch) {
+                let sess_obj = req.session;
+                sess_obj.authen = results[0].user_id;
+                res.redirect('/home');
+            } else {
+                res.status(401).send('Username or password is incorrect');
+            }
+        });
     });
 });
+
 
 // renders sign up
 app.get('/sign-up', (req, res) => {
@@ -119,7 +156,33 @@ app.get('/sign-up', (req, res) => {
 
 });
 
-app.post('/sign-up', (req,res) => {
+// allows users to create an account and inserts them into the database
+app.post('/sign-up', (req, res) => {
+
+    const email = req.body.emailField;
+    const userName = req.body.usernameField;
+    const age = req.body.ageField;
+    const password = req.body.passwordField;
+
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
+        if (err) {
+            console.error('Error hashing password:', err);
+            res.send('An error occured while creating the account.');
+        } else {
+            const query = `INSERT INTO user (username, password, email_address, age) VALUES ('${userName}', '${hashedPassword}', '${email}', '${age}')`;
+
+            db.query(query, (err, result) => {
+                if (err) {
+                    // handle error
+                    console.error("Error inserting user:", err);
+                    res.send("An error occured while creating the account.");
+                } else {
+                    // res.send("Account created successfully");
+                    res.redirect('/home');// later consider redirecting to log in!
+                }
+            });
+        }
+    });
 
 });
 
