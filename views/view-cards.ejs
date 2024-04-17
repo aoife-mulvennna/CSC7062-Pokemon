@@ -20,9 +20,9 @@
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
           <a class="nav-link" aria-current="page" href="home">Home</a>
-          <a class="nav-link"  href="view-cards">Browse Cards</a>
-          <a class="nav-link" href="#">Browse Collections</a>
-          <a class="nav-link active" href="view-collection">View My Collection</a>
+          <a class="nav-link active" href="view-cards">Browse Cards</a>
+          <a class="nav-link" href=" <a class="nav-link" href="other-collections">Browse Collections</a>">Browse Collections</a>
+          <a class="nav-link" href="view-collection">View My Collection</a>
           <a class="nav-link" href="sign-up">Create an Account</a>
           <a class="nav-link" href="login">Login to Account</a>
 
@@ -78,13 +78,19 @@
             <%= card.evolve_from || '-' %>
           </td>
           <td><button type="button" class="btn btn-secondary">Favourite</button></td>
-          <td><button type="button" class="btn btn-secondary">Add to collection</button></td>
+          <td>
+            
+            <form action="/add-to-collection" method="POST">
+              <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
+              <button type="submit" class="btn btn-primary">Add to Collection</button>
+            </form>
+          </td>
         </tr>
         <% }); %>
     </tbody>
   </table>
 
-<!-- <div class="container">
+  <!-- <div class="container">
   
   <div class="row pb-3">
     <% cards.forEach(card=> { %>

@@ -5,3 +5,24 @@ html{
 body{
     background-color: transparent;
 }
+
+.profile-picture-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .profile-picture-row {
+    display: flex;
+  }
+  
+  .profile-picture-row button {
+    margin: 5px;
+  }
+  
+  .profile-picture-row button img {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+  }
+  
