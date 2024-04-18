@@ -2,3 +2,21 @@
     width: 70px;
     height: 70px;
   }
+
+  .card-details {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .card-details li {
+    display: flex;
+    margin-bottom: 8px; /* Adjust as needed */
+  }
+  
+  .card-details .title {
+    flex: 0 0 120px; /* Adjust as needed */
+  }
+  
+  .card-details .value {
+    flex: 1;
+  }

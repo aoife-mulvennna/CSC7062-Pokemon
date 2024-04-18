@@ -2,110 +2,105 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>View Cards</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-    integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Cards</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/innerstyle.css">
 </head>
 
 <body>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-          <a class="navbar-brand" href="/">
-            <img class="logo" src="<%=logoPath %>" alt="logo">
-          </a>
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-              <a class="nav-link" aria-current="page" href="home">Home</a>
-              <a class="nav-link"  href="view-cards">Browse Cards</a>
-              <a class="nav-link" href="other-collections">Browse Collections</a>
-              <a class="nav-link active" href="view-collection">View My Collection</a>
-              <a class="nav-link" href="sign-up">Create an Account</a>
-              <a class="nav-link" href="login">Login to Account</a>
-    
+            <a class="navbar-brand" href="/">
+                <img class="logo" src="<%=logoPath %>" alt="logo">
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-link" aria-current="page" href="home">Home</a>
+                    <a class="nav-link" href="view-cards">Browse Cards</a>
+                    <a class="nav-link" href="other-collections">Browse Collections</a>
+                    <a class="nav-link active" href="view-collection">View My Collection</a>
+                    <!-- <a class="nav-link" href="sign-up">Create an Account</a>
+              <a class="nav-link" href="login">Login to Account</a> -->
+
+                    <!-- <p>you are logged in as <%=username%>! <img class="display-profile-pic" src="<%=picUrl%>"></p>
+              <p>view my account</p> -->
+
+                </div>
             </div>
-          </div>
+            <div class="navbar-nav ml-auto d-flex align-items-center">
+                <div>
+                    <p class="text-white mb-0">You are logged in as <%=username%>!</p>
+                    <p class="text-white mb-0">View My Account</p>
+                </div>
+                <img class="display-profile-pic ml-3" src="<%=picUrl%>" alt="Profile Picture">
+            </div>
         </div>
-      </nav>
+    </nav>
 
-  <h1><%=username %>'s collection!</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Image</th>
-        <th>HP</th>
-        <th>Stage</th>
-        <th>Attack</th>
-        <th>Rarity</th>
-        <th>Weakness</th>
-        <th>Set Name</th>
-        <th>Evolves From</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% cards.forEach(card=> { %>
-        <tr>
-          <td>
-            <%= card.pokemon_name %>
-          </td>
-          <td>
-            <%= card.pokemon_type_name %>
-          </td>
-          <td><img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="125"></td>
-          <td>
-            <%= card.hp %>
-          </td>
-          <td>
-            <%= card.pokemon_stage_name %>
-          </td>
-          <td>
-            <%= card.attack %>
-          </td>
-          <td>
-            <%= card.rarity %>
-          </td>
-          <td>
-            <%= card.weakness %>
-          </td>
-          <td>
-            <%= card.pokemon_set_name %>
-          </td>
-          <td>
-            <%= card.evolve_from || '-' %>
-          </td>
-          <td><button type="button" class="btn btn-secondary">Favourite</button></td>
-          <td>
-            <form action="/remove-from-collection" method="POST">
-                <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
-                <button type="submit" class="btn btn-primary">Remove</button>
-              </form>
-        </td>
-        </tr>
-        <% }); %>
-    </tbody>
-  </table>
 
-<!-- <div class="container">
-  
-  <div class="row pb-3">
-    <% cards.forEach(card=> { %>
-<div class="column p-3 w-50">
-  <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" >
-</div>
-<div class="column p-3">
-  <%= card.pokemon_name %>
-</div>
-<% }); %>
-  </div>
-  
-</div>
 
-   -->
+    <div class="container mt-5">
+        <h2>
+            <%=username %>'s collection!
+        </h2>
+
+        <hr>
+        <% cards.forEach(card=> { %>
+            <div class="row">
+                <div class="col">
+                    <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="210">
+                </div>
+                <div class="col">
+                    <ul class="list-unstyled card-details">
+                        <li><strong class="title">Name: </strong>
+                            <%= card.pokemon_name %>
+                        </li>
+                        <li><strong class="title">Type: </strong>
+                            <%= card.pokemon_type_name %>
+                        </li>
+                        <li><strong class="title">Hp: </strong>
+                            <%= card.hp %>
+                        </li>
+                        <li><strong class="title">Stage: </strong>
+                            <%= card.pokemon_stage_name %>
+                        </li>
+                        <li><strong class="title">Attack: </strong>
+                            <%= card.attack %>
+                        </li>
+                        <li><strong class="title">Rarity: </strong>
+                            <%= card.rarity %>
+                        </li>
+                        <li><strong class="title">Weakness: </strong>
+                            <%= card.weakness %>
+                        </li>
+                        <li><strong class="title">Set: </strong>
+                            <%= card.pokemon_set_name %>
+                        </li>
+                        <li><strong class="title">Evolves from: </strong>
+                            <%= card.evolve_from || 'None' %>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="col">
+                    <button type="button" class="btn btn-secondary mt-3">Favourite</button></td>
+                    <form action="/remove-from-collection" method="POST">
+                        <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
+                        <button type="submit" class="btn btn-primary mt-3">Remove</button>
+                    </form>
+                </div>
+            </div>
+
+            <hr>
+            <% }); %>
+
+
+    </div>
 </body>
 
 </html>

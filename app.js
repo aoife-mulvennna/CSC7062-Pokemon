@@ -35,9 +35,15 @@ const db = mysql.createConnection({
     port: '8889'
 });
 
-// db.connect((err) => {
-//     if (err) throw err;
-// });
+function isAuthenticated(req, res, next) {
+    if (req.user) {
+      // User is authenticated, proceed with the request
+      return next();
+    } else {
+      // User is not authenticated, redirect to guest access page
+      res.redirect('/guest-access');
+    }
+  }
 
 
 // renders main view, pokemon logo, and background images
@@ -68,18 +74,27 @@ app.get('/view-cards', (req, res) => {
 app.get('/view-collection', (req, res) => {
     let sess_obj = req.session;
     const uid = sess_obj.authen;
-    const query = ` SELECT user.username, pokemon_card.*, user.profile_picture_id FROM user INNER JOIN collection ON user.user_id = collection.user_id
-INNER JOIN card_collection ON collection.collection_id = card_collection.collection_id
-INNER JOIN pokemon_card ON card_collection.card_id = pokemon_card.pokemon_card_id WHERE user.user_id = "${uid}"`;
+    const query = ` SELECT u.username, pc.*, u.profile_picture_id, ps.pokemon_stage_name, psn.pokemon_set_name, pt.pokemon_type_name, pp.*
+    FROM user u
+    INNER JOIN collection c ON u.user_id = c.user_id
+    INNER JOIN card_collection cc ON c.collection_id = cc.collection_id
+    INNER JOIN pokemon_card pc ON cc.card_id = pc.pokemon_card_id 
+    INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
+    INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
+    INNER JOIN pokemon_set psn ON psn.pokemon_set_id = pc.pokemon_set_id
+    INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id
+    WHERE u.user_id = "${uid}"`;
 
     db.query(query, (err, results) => {
 
         if (err) throw err;
         const username = results.length > 0 ? results[0].username : '';
+        const picUrl = results.length > 0 ? results[0].profile_picture_url : '';
         // res.render('view-collection', { cards: results, logoPath: 'Pokemon_Logo.png' });
-        res.render('view-collection', { cards: results, username: username, logoPath: 'Pokemon_Logo.png' });
-
+        res.render('view-collection', { cards: results, username: username, logoPath: 'Pokemon_Logo.png', picUrl : picUrl });
+        console.log(results[0]);
     });
+
 });
 
 // renders home view 
@@ -89,11 +104,25 @@ app.get('/home', (req, res) => {
     console.log(sess_obj);
     if (sess_obj.authen) {
         const uid = sess_obj.authen;
-        const user = `SELECT * FROM user WHERE user_id = "${uid}"`;
+        const userQuery = `SELECT u.*, pp.profile_picture_url FROM user u 
+                        INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id
+                        WHERE u.user_id = "${uid}"`;
 
-        db.query(user, (err, row) => {
-            const firstrow = row[0];
-            res.render('home', { logoPath: 'Pokemon_Logo.png', userdata: firstrow });
+        db.query(userQuery, (err, results) => {
+            if (err) {
+                console.error("Error fetching user data:", err);
+                res.status(500).send("Internal Server Error");
+                return;
+            }
+
+            if (results.length === 0) {
+                res.status(404).send("User not found");
+                return;
+            }
+
+            const userData = results[0];
+            const picUrl = userData.profile_picture_url;
+            res.render('home', { logoPath: 'Pokemon_Logo.png', userdata: userData, picUrl: picUrl });
         });
     } else {
         res.send("Acccess Denied");
@@ -198,7 +227,7 @@ console.log(req.body);
                     res.send("An error occurred while creating the account.");
                 }
 
-                res.redirect('/home'); // later consider redirecting to log in!
+                res.redirect('/login'); // later consider redirecting to log in!
             });
         });
     });
@@ -226,7 +255,6 @@ app.post('/add-to-collection', (req, res) => {
         }
         const collectionID = results[0].collection_id;
 
-
         const insertQuery = `INSERT INTO card_collection (collection_id, card_id) VALUES (?,?)`;
 
         db.query(insertQuery, [collectionID, cardID], (err, result) => {
@@ -249,14 +277,10 @@ app.post('/add-to-collection', (req, res) => {
 
 app.post('/remove-from-collection', (req, res) => {
     let sess_obj = req.session;
-    const userId = req.sess_obj.authen;
+    const userId = sess_obj.authen;
     const cardId = req.body.card_id;
-
-
-
     // Query to get the name of the Pokémon being removed
     const getPokemonNameQuery = `SELECT pokemon_name FROM pokemon_card WHERE pokemon_card_id = ?`;
-
 
     const deleteQuery = `DELETE FROM card_collection WHERE collection_id IN (SELECT collection_id FROM collection WHERE user_id = ?) AND card_id = ?`;
 
@@ -269,22 +293,11 @@ app.post('/remove-from-collection', (req, res) => {
         }
     });
 
-
-
 });
 
 app.get('/other-collections', (req, res) => {
     let sess_obj = req.session;
     const userId = sess_obj.authen;
-    // const collectionsQuery = `SELECT * FROM collection WHERE user_id != ?`;
-    // db.query(collectionsQuery, [userId], (err, result) => {
-    //     if (err) {
-    //         console.error("Error getting collections", err);
-    //         res.status(500).send('Internal Server Error');
-    //     } else {
-    //         res.render('other-collections', { collections: result, logoPath: 'Pokemon_Logo.png' });
-    //     }
-    // });
     const query = `SELECT u.username, c.collection_id, pp.profile_picture_url,  COUNT(cc.card_id) AS num_cards FROM  user u 
     INNER JOIN  collection c ON u.user_id = c.user_id
     LEFT JOIN  card_collection cc ON c.collection_id = cc.collection_id
@@ -303,6 +316,33 @@ app.get('/other-collections', (req, res) => {
     });
 });
 
+app.get('/guest-access', (req,res)=>{
+    res.render('guest-access', {logoPath: 'Pokemon_Logo.png' });
+})
+
+app.get('/guest-view-cards', (req, res) => {
+    const query = `
+    SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, ps.pokemon_stage_name, pc.attack, pc.rarity, pc.weakness, psn.pokemon_set_name, pc.evolve_from 
+    FROM pokemon_card pc 
+
+    INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
+    INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
+    INNER JOIN pokemon_set psn ON psn.pokemon_set_id = pc.pokemon_set_id;`
+
+
+    db.query(query, (err, results) => {
+
+        if (err) throw err;
+
+        res.render('guest-view-cards', { cards: results, logoPath: 'Pokemon_Logo.png' });
+    });
+
+  });
+  
+  // Example route accessible to authenticated users only
+  app.get('/restricted-route', isAuthenticated, (req, res) => {
+    res.send('This is a restricted route for authenticated users only.');
+  });
 
 app.listen(3000, () => {
     console.log('Server on port 3000');

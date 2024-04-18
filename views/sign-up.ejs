@@ -45,41 +45,20 @@
                         <!-- <label for="password">Password:</label> -->
                         <input type="password" name="passwordField" placeholder="Create a Password" required>
                     </div>
-                    <!-- <div>
-                        <label for="profilePicId">Select Profile Picture:</label>
-                        <% profilePictures.forEach(profilePic => { %>
-                            <button type="submit" name="profilePicId" value="<%= profilePic.profile_picture_id %>">
-                              <img src="<%= profilePic.profile_picture_url %>" alt="Profile Picture <%= profilePic.profile_picture_id %>" class="img-thumbnail img-fluid" style="height: 95px">
-                            </button>
-                          <% }); %>
-                        </select>
-                    </div> -->
+
+                    <input type="hidden" id="selected-profile-pic" name="profilePicIdField">
                     <div class="profile-picture-container">
                         <label for="profilePicId">Select Profile Picture:</label>
                         <div class="profile-picture-row">
-                            <% profilePictures.slice(0, 3).forEach(profilePic=> { %>
+                            <% profilePictures.forEach(profilePic=> { %>
                                 <button type="button" class="profile-pic-btn"
-                                    value="<%= profilePic.profile_picture_id %>">
+                                    value="<%= profilePic.profile_picture_id %>" onclick="selectProfilePic(this)">
                                     <img src="<%= profilePic.profile_picture_url %>"
                                         alt="Profile Picture <%= profilePic.profile_picture_id %>"
                                         class="img-thumbnail img-fluid">
                                 </button>
                                 <% }); %>
                         </div>
-                        <input type="hidden" id="selected-profile-pic" name="profilePicIdField">
-                        <!-- <input type="hidden" id="selected-profile-pic" name="profilePicId"> -->
-                        <div class="profile-picture-row">
-                            <% profilePictures.slice(3).forEach(profilePic=> { %>
-                                <button type="button" class="profile-pic-btn"
-                                    value="<%= profilePic.profile_picture_id %>">
-                                    <img src="<%= profilePic.profile_picture_url %>"
-                                        alt="Profile Picture <%= profilePic.profile_picture_id %>"
-                                        class="img-thumbnail img-fluid">
-                                </button>
-                                <% }); %>
-                        </div>
-                        <input type="hidden" id="selected-profile-pic" name="profilePicIdField">
-
                     </div>
 
                     <button type="submit">Create Account</button>
@@ -90,21 +69,16 @@
         </div>
     </div>
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const profilePicButtons = document.querySelectorAll('.profile-pic-btn');
-        const selectedProfilePicInput = document.getElementById('selected-profile-pic');
+    <script>
+        function selectProfilePic(button) {
+            const profilePicId = button.value;
+            document.getElementById('selected-profile-pic').value = profilePicId;
+        }
+    </script>
     
-        profilePicButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const profilePicId = button.value;
-                console.log('Profile picture ID:', profilePicId); // Check if profilePicId is correct
-                selectedProfilePicInput.value = profilePicId;
-                console.log('Hidden input value:', selectedProfilePicInput.value); // Check if hidden input value is updated
-            });
-        });
-    });
-    
-
 </body>
+
+
+
 
 </html>
