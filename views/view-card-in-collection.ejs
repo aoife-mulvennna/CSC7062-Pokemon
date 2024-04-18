@@ -16,7 +16,7 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
-                <img class="logo" src="<%=logoPath %>" alt="logo">
+                <!-- <img class="logo" src="<%=logoPath %>" alt="logo"> -->
             </a>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
@@ -87,10 +87,6 @@
 
                 <div class="col">
                     <button type="button" class="btn btn-secondary mt-3">Favourite</button></td>
-                    <form action="/remove-from-collection" method="POST">
-                        <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
-                        <button type="submit" class="btn btn-primary mt-3">Remove</button>
-                    </form>
                 </div>
             </div>
 

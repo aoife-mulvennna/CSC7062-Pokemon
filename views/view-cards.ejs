@@ -29,13 +29,19 @@
 
         </div>
       </div>
+      <div class="navbar-nav ml-auto d-flex align-items-center">
+        <div>
+            <p class="text-white mb-0">You are logged in as <%=username%>!</p>
+            <p class="text-white mb-0">View My Account</p>
+        </div>
+        <img class="display-profile-pic ml-3" src="<%=picUrl%>" alt="Profile Picture">
+    </div>
     </div>
   </nav>
 
 
   <div class="container mt-5">
     <h2>All Cards</h2>
-
     <hr>
     <% cards.forEach(card=> { %>
     <div class="row">
@@ -49,7 +55,7 @@
           <li><strong class="title">Hp:            </strong><%= card.hp %></li>
           <li><strong class="title">Stage:         </strong><%= card.pokemon_stage_name %></li>
           <li><strong class="title">Attack:        </strong><%= card.attack %></li>
-          <li><strong class="title">Rarity:        </strong><%= card.rarity %></li>
+          <li><strong class="title">Rarity:        </strong><%= card.rarity_name %></li>
           <li><strong class="title">Weakness:      </strong><%= card.weakness %></li>
           <li><strong class="title">Set:           </strong> <%= card.pokemon_set_name %></li>
           <li><strong class="title">Evolves from:  </strong> <%= card.evolve_from || 'None' %></li>
