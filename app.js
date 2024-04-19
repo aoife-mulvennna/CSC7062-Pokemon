@@ -330,10 +330,11 @@ app.get('/other-collections', (req, res) => {
     let sess_obj = req.session;
     const userId = sess_obj.authen;
 
-    const query = `SELECT u.username, c.collection_id, pp.profile_picture_url,  COUNT(cc.card_id) AS num_cards FROM  user u 
+    const query = `SELECT u.username, c.collection_id, pp.profile_picture_url,  COUNT(cc.card_id) AS num_cards, ROUND(AVG(r.rating_value),1) AS average_rating FROM  user u 
     INNER JOIN  collection c ON u.user_id = c.user_id
     LEFT JOIN  card_collection cc ON c.collection_id = cc.collection_id
     INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id
+    LEFT JOIN rating r ON r.collection_id = c.collection_id
     GROUP BY 
         c.collection_id`;
     const getUsername = `SELECT * FROM user WHERE user_id = ?`;
@@ -413,10 +414,13 @@ app.get('/view-card-in-collection', (req, res) => {
     let sess_obj = req.session;
     const userId = sess_obj.authen;
     const collectionId = req.query.collection_id
-    const getUsername = `SELECT * FROM user WHERE user_id = ?`
+    const getUserQuery = `SELECT * FROM user u INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id WHERE user_id = ?`
+
+    // need to get the users rating 
+    const getRatingQuery = `SELECT rating_value FROM rating WHERE rating_user_id = ? AND collection_id = ?`;
 
     const query = `
-    SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, ps.pokemon_stage_name, pc.attack, r.rarity_name, pc.weakness, psn.pokemon_set_name, pc.evolve_from, c.collection_id
+    SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, ps.pokemon_stage_name, pc.attack, r.rarity_name, pc.weakness, psn.pokemon_set_name, pc.evolve_from, c.collection_id, pp.profile_picture_id,pp.profile_picture_url, u.username
     FROM pokemon_card pc 
     INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
     INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
@@ -425,16 +429,17 @@ app.get('/view-card-in-collection', (req, res) => {
     INNER JOIN card_collection cc ON cc.card_id = pc.pokemon_card_id
     INNER JOIN collection c ON cc.collection_id = c.collection_id
     INNER JOIN user u ON c.user_id = u.user_id
+    INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id
     WHERE c.collection_id = ?`
-    ;
-
-    db.query(query, [collectionId], (err, results) => {
+        ;
+    console.log('collection id:', collectionId);
+    db.query(query, [collectionId], (err, collectionResults) => {
         if (err) {
             console.error("Error fetching cards in collection:", err);
             res.status(500).send('Internal Server Error');
             return;
         }
-        db.query(getUsername, [userId], (err, usernameResult) => {
+        db.query(getUserQuery, [userId], (err, usernameResult) => {
             if (err) {
                 console.error("Error fetching username:", err);
                 res.status(500).send('Internal Server Error');
@@ -445,12 +450,92 @@ app.get('/view-card-in-collection', (req, res) => {
                 res.status(404).send('Username not found');
                 return;
             }
-            const username = usernameResult[0].username;
-            const picUrl = usernameResult[0].profile_picture_url;
-        res.render('view-card-in-collection', { cards: results, logoPath:'Pokemon_Logo.png', username:username, picUrl:picUrl});
+            db.query(getRatingQuery, [userId, collectionId], (err, ratingResult) => {
+                if (err) {
+                    console.error("Error fetching user's rating:", err);
+                    res.status(500).send('Internal Server Error');
+                    return;
+                }
+
+
+                const userRating = ratingResult.length > 0 ? ratingResult[0].rating_value : null;
+
+                const username = usernameResult[0].username;
+                const picUrl = usernameResult[0].profile_picture_url;
+                const ownerUsername = collectionResults[0].username;
+                const ownerPic = collectionResults[0].profile_picture_url;
+                console.log(collectionResults);
+                res.render('view-card-in-collection', {
+                    cards: collectionResults, logoPath: 'Pokemon_Logo.png',
+                    username: username, picUrl: picUrl, ownerUsername: ownerUsername, ownerPic: ownerPic, collectionId: collectionId, userRating: userRating
+                });
+            });
+        });
     });
 });
+
+const getUserIdFromSession = (req, res, next) => {
+    let sess_obj = req.session;
+    req.ratingUserId = sess_obj.authen; // Assuming the user ID is stored in sess_obj.authen
+    next(); // Call next to proceed to the next middleware or route handler
+};
+// endpoint for leaving a rating 
+app.post('/ratings', getUserIdFromSession, (req, res) => {
+
+    let sess_obj = req.session;
+    const ratingUserId = req.ratingUserId;
+    const collectionId = req.body.collectionId;
+    const ratingValue = req.body.ratingValue;
+    // checking if the user has already rated the collection
+    const checkRatingQuery = `SELECT * FROM rating WHERE collection_id = ? AND rating_user_id = ?`;
+    db.query(checkRatingQuery, [collectionId, ratingUserId], (err, result) => {
+        if (err) {
+            console.error("Error checking existing rating:", err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        if (result.length > 0) {
+            const updateRatingQuery = `UPDATE rating SET rating_value = ? WHERE collection_id = ? AND rating_user_id = ?`;
+            db.query(updateRatingQuery, [ratingValue, collectionId,ratingUserId], (err, updateResult) => {
+                if (err) {
+                    console.error("Error updating rating:", err);
+                    res.status(500).send('Internal Server Error');
+                    return;
+                }
+                res.redirect('/view-card-in-collection?collection_id=' + collectionId);
+            });
+        } else {
+            // insert rating
+            const insertRatingQuery = `INSERT INTO rating (rating_user_id, collection_id, rating_value) VALUES (?, ?, ?)`;
+            db.query(insertRatingQuery, [ratingUserId, collectionId, ratingValue], (err, result) => {
+                if (err) {
+                    console.error("Error submitting rating:", err);
+                    res.status(500).send('Internal Server Error');
+                    return;
+                }
+                console.log("Rating submitted successfully");
+                res.redirect(req.get('referer'));
+            });
+        }
+    });
 });
+
+// get the ratings from database to display 
+app.get('/ratings/:collectionId', (req, res) => {
+    const collectionId = req.params.collectionId;
+    const query = `SELECT * FROM rating WHERE collection_id = ?`;
+    db.query(query, [collectionId], (err, result) => {
+        if (err) {
+            console.error("Error retrieving ratings:", err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.json(result); // Send the retrieved ratings back as JSON
+    });
+});
+
+
+
 app.listen(3000, () => {
     console.log('Server on port 3000');
 });

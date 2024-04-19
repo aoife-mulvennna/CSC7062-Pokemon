@@ -85,3 +85,11 @@ th {
     padding-bottom: 5px;
 }
 
+/* CSS for styling filled stars */
+.star {
+    color: #ccc; /* Default color for unfilled stars */
+}
+
+.filled {
+    color: gold; /* Color for filled stars */
+}

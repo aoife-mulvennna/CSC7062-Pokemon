@@ -16,14 +16,14 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
             <a class="navbar-brand" href="/">
-                <!-- <img class="logo" src="<%=logoPath %>" alt="logo"> -->
+                <img class="logo" src="<%=logoPath %>" alt="logo">
             </a>
             <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                 <div class="navbar-nav">
                     <a class="nav-link" aria-current="page" href="home">Home</a>
                     <a class="nav-link" href="view-cards">Browse Cards</a>
-                    <a class="nav-link" href="other-collections">Browse Collections</a>
-                    <a class="nav-link active" href="view-collection">View My Collection</a>
+                    <a class="nav-link active" href="other-collections">Browse Collections</a>
+                    <a class="nav-link" href="view-collection">View My Collection</a>
                     <!-- <a class="nav-link" href="sign-up">Create an Account</a>
               <a class="nav-link" href="login">Login to Account</a> -->
 
@@ -32,7 +32,9 @@
             </div>
             <div class="navbar-nav ml-auto d-flex align-items-center">
                 <div>
-                    <p class="text-white mb-0">You are logged in as <%=username%>!</p>
+                    <p class="text-white mb-0">You are logged in as <strong>
+                            <%=username%>
+                        </strong> !</p>
                     <p class="text-white mb-0">View My Account</p>
                 </div>
                 <img class="display-profile-pic ml-3" src="<%=picUrl%>" alt="Profile Picture">
@@ -44,8 +46,28 @@
 
     <div class="container mt-5">
         <h2>
-            <%=username %>'s collection!
+            <img src="<%=ownerPic%>" class="display-profile-pic">
+            <%=ownerUsername %>'s collection!
+
         </h2>
+
+        <form action="/ratings" method="POST">
+            <input type="hidden" name="collectionId" value="<%= collectionId %>">
+            <label for="rating">Rate this collection:</label>
+            <select name="ratingValue" id="rating">
+                <option value="1">1 star</option>
+                <option value="2">2 stars</option>
+                <option value="3">3 stars</option>
+                <option value="4">4 stars</option>
+                <option value="5">5 stars</option>
+            </select>
+            <button type="submit">Submit Rating</button>
+        </form>
+        <!-- Display the current rating value -->
+        <p>Your current rating: <%= userRating || 'Not rated yet' %> stars
+        </p>
+
+        
 
         <hr>
         <% cards.forEach(card=> { %>
@@ -96,5 +118,9 @@
 
     </div>
 </body>
+<script>
+    const ratings = document.getElementById('rating1'); const rating1 = new CDB.Rating(ratings);
+    rating1.getRating;
+</script>
 
 </html>

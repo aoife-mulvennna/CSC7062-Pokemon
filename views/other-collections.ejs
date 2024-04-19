@@ -30,7 +30,7 @@
             </div>
             <div class="navbar-nav ml-auto d-flex align-items-center">
                 <div>
-                    <p class="text-white mb-0">You are logged in as <%=username%>!</p>
+                    <p class="text-white mb-0">You are logged in as <strong><%=username%></strong> !</p>
                     <p class="text-white mb-0">View My Account</p>
                 </div>
                 <img class="display-profile-pic ml-3" src="<%=picUrl%>" alt="Profile Picture">
@@ -48,7 +48,7 @@
             <div class="row">
                 <div class="col">
                     <img src="<%= collection.profile_picture_url %>" class="display-profile-pic">
-                    <%= collection.username %>'s collection
+                <strong><%= collection.username %></strong>'s collection
                 </div>
                 <div class="col">
                     <ul class="list-unstyled">
@@ -59,9 +59,12 @@
                 </div>
                 <div class="col">
                     <form action="/view-card-in-collection" method="GET">
-                        <input type="hidden" name="card_id" value="<%= collection.collection_id %>">
+                        <input type="hidden" name="collection_id" value="<%= collection.collection_id %>">
                         <button type="submit" class="btn btn-primary mt-3">View Collection</button>
                       </form>
+                </div>
+                <div class="col">
+                    Average rating: <%=collection.average_rating || 'Not rated yet'%>
                 </div>
             </div>
            
