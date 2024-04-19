@@ -389,22 +389,6 @@ app.get('/guest-view-cards', (req, res) => {
 
 });
 
-// app.get('/filter-by-stage', (req, res) => {
-//     const stage_name = req.query.stage_name;
-//     const query = `SELECT * FROM pokemon_card pc
-//     INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-//     WHERE ps.pokemon_stage_name = ?`;
-
-//     db.query(query, [stage_name], (err, filterResults) => {
-//         if (err) throw err;
-//         if (req.isAuthenticated()){
-//             res.render('view-cards', { cards: filterResults, logoPath: 'Pokemon_Logo.png' });
-//         } else{
-//             res.render('guest-view-cards', { cards: filterResults, logoPath: 'Pokemon_Logo.png' });
-//         }
-
-//     });
-// });
 // Example route accessible to authenticated users only
 app.get('/restricted-route', isAuthenticated, (req, res) => {
     res.send('This is a restricted route for authenticated users only.');
@@ -496,7 +480,7 @@ app.post('/ratings', getUserIdFromSession, (req, res) => {
         }
         if (result.length > 0) {
             const updateRatingQuery = `UPDATE rating SET rating_value = ? WHERE collection_id = ? AND rating_user_id = ?`;
-            db.query(updateRatingQuery, [ratingValue, collectionId,ratingUserId], (err, updateResult) => {
+            db.query(updateRatingQuery, [ratingValue, collectionId, ratingUserId], (err, updateResult) => {
                 if (err) {
                     console.error("Error updating rating:", err);
                     res.status(500).send('Internal Server Error');
@@ -534,6 +518,159 @@ app.get('/ratings/:collectionId', (req, res) => {
     });
 });
 
+////////////////FILTERS///////////////////
+app.get('/filter-by-stage-guest', (req, res) => {
+    const stageName = req.query.stage_name;
+    const filterStageQuery = `SELECT * FROM pokemon_card pc
+INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
+INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
+INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
+INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
+WHERE ps.pokemon_stage_name = ?`;
+    db.query(filterStageQuery, [stageName], (err, filteredResults) => {
+        if (err) {
+            console.error("Error finding results", err);
+            res.status(500).send('Internal Server Error')
+            return;
+        }
+        res.render('guest-view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
+    });
+
+});
+
+app.get('/filter-by-set-guest', (req, res) => {
+    const setName = req.query.set_name;
+    const filterSetQuery = `SELECT * FROM pokemon_card pc
+INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
+INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
+INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
+INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
+WHERE pst.pokemon_set_name = ?`;
+
+    db.query(filterSetQuery, [setName], (err, filteredResults) => {
+        if (err) {
+            console.error("Error finding results", err);
+            res.status(500).send('Internal Server Error')
+            return;
+        }
+        res.render('guest-view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
+    });
+
+});
+
+app.get('/filter-by-type-guest', (req, res) => {
+    const typeName = req.query.type_name;
+    const filterTypeQuery = `SELECT * FROM pokemon_card pc
+INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
+INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
+INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
+INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
+WHERE pt.pokemon_type_name = ?`;
+
+    db.query(filterTypeQuery, [typeName], (err, filteredResults) => {
+        if (err) {
+            console.error("Error finding results", err);
+            res.status(500).send('Internal Server Error')
+            return;
+        }
+        res.render('guest-view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
+    });
+});
+app.get('/filter-by-rarity-guest', (req, res) => {
+    const rarityName = req.query.rarity_name;
+    const filterRarityQuery = `SELECT * FROM pokemon_card pc
+INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
+INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
+INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
+INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
+WHERE r.rarity_name = ?`;
+
+    db.query(filterRarityQuery, [rarityName], (err, filteredResults) => {
+        if (err) {
+            console.error("Error finding results", err);
+            res.status(500).send('Internal Server Error')
+            return;
+        }
+        res.render('guest-view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
+    });
+});
+
+/////view-cards-member////////
+app.get('/filter-by-stage', (req, res) => {
+    const stageName = req.query.stage_name;
+    const filterStageQuery = `SELECT * FROM pokemon_card pc
+INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
+INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
+INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
+INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
+WHERE ps.pokemon_stage_name = ?`;
+    db.query(filterStageQuery, [stageName], (err, filteredResults) => {
+        if (err) {
+            console.error("Error finding results", err);
+            res.status(500).send('Internal Server Error')
+            return;
+        }
+        res.render('view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
+    });
+
+});
+
+app.get('/filter-by-set', (req, res) => {
+    const setName = req.query.set_name;
+    const filterSetQuery = `SELECT * FROM pokemon_card pc
+INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
+INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
+INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
+INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
+WHERE pst.pokemon_set_name = ?`;
+
+    db.query(filterSetQuery, [setName], (err, filteredResults) => {
+        if (err) {
+            console.error("Error finding results", err);
+            res.status(500).send('Internal Server Error')
+            return;
+        }
+        res.render('view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
+    });
+
+});
+
+app.get('/filter-by-type-guest', (req, res) => {
+    const typeName = req.query.type_name;
+    const filterTypeQuery = `SELECT * FROM pokemon_card pc
+INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
+INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
+INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
+INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
+WHERE pt.pokemon_type_name = ?`;
+
+    db.query(filterTypeQuery, [typeName], (err, filteredResults) => {
+        if (err) {
+            console.error("Error finding results", err);
+            res.status(500).send('Internal Server Error')
+            return;
+        }
+        res.render('guest-view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
+    });
+});
+app.get('/filter-by-rarity-guest', (req, res) => {
+    const rarityName = req.query.rarity_name;
+    const filterRarityQuery = `SELECT * FROM pokemon_card pc
+INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
+INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
+INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
+INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
+WHERE r.rarity_name = ?`;
+
+    db.query(filterRarityQuery, [rarityName], (err, filteredResults) => {
+        if (err) {
+            console.error("Error finding results", err);
+            res.status(500).send('Internal Server Error')
+            return;
+        }
+        res.render('guest-view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
+    });
+});
 
 
 app.listen(3000, () => {
