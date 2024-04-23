@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Cards</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/innerstyle.css">
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img class="logo" src="<%=logoPath %>" alt="logo">
+            </a>
+            <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                <div class="navbar-nav">
+                    <a class="nav-link" href="home">Home</a>
+                    <a class="nav-link" href="view-cards">Browse Cards</a>
+                    <a class="nav-link" aria-current="page" href="other-collections">Browse Collections</a>
+                    <a class="nav-link" href="view-collection">View My Collection</a>
+
+
+                </div>
+            </div>
+            <div class="navbar-nav ml-auto d-flex align-items-center">
+                <div>
+                    <p class="text-white mb-0">You are logged in as <strong>
+                            <%=username%>
+                        </strong> !</p>
+                </div>
+                <img class="display-profile-pic ml-3" src="<%=picUrl%>" alt="Profile Picture">
+            </div>
+        </div>
+    </nav>
+    <div class="container mt-5">
+        <h4>Username</h4>
+        <p>
+            <%=username%>
+        </p>
+        <hr>
+        <h4>Email Address</h4>
+        <p>
+            <%=email%>
+        </p>
+        <hr>
+        <h4>Age</h4>
+        <p>
+            <%=age%>
+        </p>
+        <hr>
+        <h4>Profile Picture</h4>
+        <p><img class="display-profile-pic ml-3" src="<%=picUrl%>" alt="Profile Picture">
+            <button class="btn btn-secondary mt-3">Change Profile Picture</button>
+        </p>
+        <hr>
+        <h4>Change Your Password</h4>
+        <form action="/update-password" method="POST">
+            <div class="mb-3">
+                <label for="password">Current Password:</label>
+                <input type="password" name="currentPasswordField" placeholder="Enter your Current Password" required>
+            </div>
+            <div class="mb-3">
+                <label for="password">New Password:</label>
+                <input type="password" name="newPasswordField" placeholder="Enter a New Password" required>
+            </div>
+            <p><button class="btn btn-primary mt-3" type="submit">Save Password</button></p>
+        </form>
+
+
+    </div>
+
+
+    <hr>
+    <h4>Sign out</h4>
+    <p>
+    <form action="/logout" method="GET">
+        <input type="hidden" name="user_id">
+        <button class="btn btn-secondary mt-3">Sign Out</button>
+    </form>
+    </p>
+    <hr>
+    <h4>Delete Account</h4>
+    <!-- Button Trigger Modal -->
+    <button type="button" class="btn btn-danger mt-3" data-bs-toggle="modal" data-bs-target="#myModal">
+        Delete Account
+    </button>
+    </div>
+
+    <div class="m-4">
+
+
+
+        <!-- The Modal -->
+        <div id="myModal" class="modal fade" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Oh no!</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal">
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Are you sure you want to delete your account?
+                        </p>
+                        <p><img src="HeartBreak.jpeg" class="heartbreak"></p>
+
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <div class="d-flex">
+                            <button type="button" class="btn btn-secondary m-3" data-bs-dismiss="modal">No, go
+                                back!</button>
+                            <form action="/delete-account" method="POST">
+                                <input type="hidden" name="user_id">
+                                <button class="btn btn-danger m-3">Yes, I'm sure</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var btn = document.getElementById("showText");
+
+            btn.addEventListener("click", function () {
+                document.getElementById("text").style.display = "block";
+                var myModal = bootstrap.Modal.getInstance(document.getElementById("myModal"));
+                myModal.handleUpdate();
+            });
+        });
+
+
+
+    </script>
+
+
+</body>
+
+</html>

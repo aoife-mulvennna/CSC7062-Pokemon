@@ -12,7 +12,6 @@
 </head>
 
 <body>
-
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container-fluid">
       <a class="navbar-brand" href="/">
@@ -24,21 +23,19 @@
           <a class="nav-link active" href="view-cards">Browse Cards</a>
           <a class="nav-link" href="other-collections">Browse Collections</a>
           <a class="nav-link" href="view-collection">View My Collection</a>
-          <!-- <a class="nav-link" href="sign-up">Create an Account</a>
-          <a class="nav-link" href="login">Login to Account</a> -->
 
         </div>
       </div>
       <div class="navbar-nav ml-auto d-flex align-items-center">
         <div>
             <p class="text-white mb-0">You are logged in as <%=username%>!</p>
-            <p class="text-white mb-0">View My Account</p>
+            <p class="text-white mb-0"><a class="text-white" href="view-account">View My Account</a></p>
         </div>
         <img class="display-profile-pic ml-3" src="<%=picUrl%>" alt="Profile Picture">
     </div>
     </div>
-  </nav>
-
+  </nav
+ 
 
   <div class="container mt-5">
     <h2>All Cards</h2>
@@ -71,14 +68,12 @@
         <form action="/add-to-collection" method="POST">
           <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
           <button type="submit" class="btn btn-primary mt-3">Add to Collection</button>
+    
         </form>
       </div>
     </div>
-
       <hr>
       <% }); %>
-
-
   </div>
 
 </body>

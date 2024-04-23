@@ -20,3 +20,11 @@
   .card-details .value {
     flex: 1;
   }
+
+  .heartbreak{
+    display: flex;
+    justify-content: center; /* Horizontally center the content */
+    align-items: center; /* Vertically center the content */
+    width: 65%;
+    margin: 0 auto; /* Automatically center the element horizontally */
+}

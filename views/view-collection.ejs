@@ -24,16 +24,13 @@
                     <a class="nav-link" href="view-cards">Browse Cards</a>
                     <a class="nav-link" href="other-collections">Browse Collections</a>
                     <a class="nav-link active" href="view-collection">View My Collection</a>
-                    <!-- <a class="nav-link" href="sign-up">Create an Account</a>
-              <a class="nav-link" href="login">Login to Account</a> -->
-
 
                 </div>
             </div>
             <div class="navbar-nav ml-auto d-flex align-items-center">
                 <div>
                     <p class="text-white mb-0">You are logged in as <%=username%>!</p>
-                    <p class="text-white mb-0">View My Account</p>
+                    <p class="text-white mb-0"><a class="text-white" href="view-account">View My Account</a></p>
                 </div>
                 <img class="display-profile-pic ml-3" src="<%=picUrl%>" alt="Profile Picture">
             </div>
@@ -48,6 +45,17 @@
         </h2>
 
         <hr>
+
+        <% if (cards.length === 0) { %>
+            <div class="container mt-3">
+                <div><img class="ml-3 sad" src="sad_eevee.jpeg">
+                </div>
+               <p>Your collection is empty.</p> 
+                <p>Add to your collection by viewing all of the cards!</p>
+                <button href="view-cards" class="btn btn-primary mt-3">Browse Cards</button>
+                </div>
+        <% } else { %>
+
         <% cards.forEach(card=> { %>
             <div class="row">
                 <div class="col">
@@ -96,9 +104,10 @@
 
             <hr>
             <% }); %>
-
+   <% } %>
 
     </div>
+
 </body>
 
 </html>
