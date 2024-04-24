@@ -3,7 +3,6 @@ const app = express();
 
 const mysql = require('mysql2');
 
-// for encrypting passwords
 const bcrypt = require('bcrypt');
 
 app.set('view engine', 'ejs');
@@ -193,15 +192,12 @@ app.get('/login', (req, res) => {
 
 });
 
-
-
-
 app.post('/login', (req, res) => {
     const { usernameField, passwordField } = req.body;
 
-    const userDataQuery = `SELECT * FROM user WHERE username = '${usernameField}'`;
+    const userDataQuery = `SELECT * FROM user WHERE username = ?`;
 
-    db.query(userDataQuery, (err, results) => {
+    db.query(userDataQuery, [usernameField], (err, results) => {
         if (err) {
             console.error('Error querying database: ', err);
             res.status(500).send('Internal Sever Error');
@@ -265,7 +261,6 @@ app.get('/sign-up', (req, res) => {
 
 // allows users to create an account and inserts them into the database
 app.post('/sign-up', (req, res) => {
-
     const email = req.body.emailField;
     const userName = req.body.usernameField;
     const age = req.body.ageField;
@@ -306,16 +301,11 @@ app.post('/sign-up', (req, res) => {
 app.post('/update-password', (req, res) => {
     let sess_obj = req.session;
     const uid = sess_obj.authen;
-    const newPassword = req.body.newPasswordField;
-    const inputCurrentPassword = req.body.currentPasswordField;
+    console.log('user id=', uid);
 
-    console.log(uid);
-    // Check if the user is logged in and authenticated
-    // if (!req.session.authenticated) {
-    //     console.log('User not authenticated');
-    //     return res.status(401).send('Unauthorized');
-    // }
-    const userDataQuery = `SELECT * FROM user WHERE username = ?`;
+    const { currentPasswordField, newPasswordField } = req.body;
+
+    const userDataQuery = `SELECT * FROM user WHERE user_id = ?`;
 
     db.query(userDataQuery, [uid], (err, results) => {
         if (err) {
@@ -323,49 +313,59 @@ app.post('/update-password', (req, res) => {
             res.status(500).send('Internal Sever Error');
             return;
         }
-
         if (results.length === 0) {
-            res.status(401).send('Username or password is incorrect');
+            res.status(401).send('There are no accounts found with user id' + uid);
             return;
         }
-
         const hashedPassword = results[0].password;
 
-        bcrypt.compare(inputCurrentPassword, hashedPassword, (bcryptErr, isMatch) => {
+        bcrypt.compare(currentPasswordField, hashedPassword, (bcryptErr, isMatch) => {
             if (bcryptErr) {
                 console.error('Error comparing passwords:', bcryptErr);
                 res.status(500).send('Internal Sever Error');
                 return;
             }
-            // if the passwords match, it means they can log in!
-            if (!isMatch) {
-                res.status(401).send('Username or password is incorrect');
-            }
-            // Hash the new password before updating it in the database
-            bcrypt.hash(newPassword, saltRounds, (hashErr, hashedNewPassword) => {
-                if (hashErr) {
-                    console.error('Error hashing new password:', hashErr);
-                    return res.status(500).send('Internal Server Error');
-                }
-                // Update the user's password in the database
-                const updateQuery = `UPDATE user SET password = ? WHERE user_id = ?`;
-
-                db.query(updateQuery, [hashedNewPassword, uid], (updateErr, updateResult) => {
-                    if (updateErr) {
-                        console.error('Error updating password:', updateErr);
-                        return res.status(500).send('Internal Server Error');
+            // if the passwords match, allow user to update their password!
+            if (isMatch) {
+                // hash the password 
+                bcrypt.hash(newPasswordField, 10, (err, hashedNewPassword) => {
+                    if (err) {
+                        console.error('Error hashing password:', err);
+                        res.send('An error occured while updating the password.');
                     }
-                    // Set the success message
-                    const successMessage = 'Password updated successfully';
+                    const updatePassQuery = `UPDATE user SET password = ? WHERE user_id = ?`;
+                    db.query(updatePassQuery, [hashedNewPassword, uid], (err, result) => {
+                        if (err) {
+                            console.error("Error updating password:", err);
+                            return res.status(500).send("An error occurred while updating the password");
 
-                    res.send(successMessage)
-
-                });
-            });
+                            // res.send("An error occured while updating the password");
+                            // return;
+                        }
+                        res.send('Your password has been updated successfully');
+                        console.log('password updated successfully');
+                    });
+                })
+            } else {
+                res.status(401).send('Current password is incorrect');
+            }
         });
     });
 });
 
+app.post('/update-profile-picture', (req, res) => {
+    const { uid, profilePicUrl } = req.body;
+
+    const updateProfilePictureQuery = `UPDATE user SET profile_picture_id = (SELECT profile_picture_id FROM profile_picture WHERE profile_picture_url = ?) WHERE user_id = ?`;
+    db.query(updateProfilePictureQuery, [profilePicUrl, uid], (err, result) => {
+        if (err) {
+            console.error("Error updating profile picture:", err);
+            res.status(500).send('Internal Server Error');
+            return;
+        }
+        res.sendStatus(200); // Send success status
+    });
+});
 
 app.post('/add-to-collection', getUserIdFromSession, (req, res) => {
     // let sess_obj = req.session;
@@ -789,9 +789,22 @@ app.get('/view-account', (req, res) => {
         const username = accountDetails[0].username;
         const age = accountDetails[0].age;
         const email = accountDetails[0].email_address;
-        res.render('view-account', { details: accountDetails, logoPath: 'Pokemon_Logo.png', picUrl: picture_url, username: username, age: age, email: email })
+
+
+        // query for profile pictures
+        const getProfilePicturesQuery = `SELECT profile_picture_id, profile_picture_url FROM profile_picture`;
+        db.query(getProfilePicturesQuery, (err, profilePictures) => {
+            if (err) {
+                console.error('Error fetching profile pictures:', err);
+                res.status(500).send('Internal Server Error');
+                return;
+            }
+
+        res.render('view-account', { details: accountDetails, logoPath: 'Pokemon_Logo.png', picUrl: picture_url, username: username, age: age, email: email,  profilePictures: profilePictures })
     });
 });
+});
+
 
 app.post('/delete-account', (req, res) => {
     let sess_obj = req.session;

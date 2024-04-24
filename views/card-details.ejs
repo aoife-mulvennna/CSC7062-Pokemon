@@ -1,0 +1,60 @@
+
+app.post('/update-password', (req, res) => {
+    let sess_obj = req.session;
+    const uid = sess_obj.authen;
+    console.log('user id=', uid);
+
+    const { currentPasswordField, newPasswordField } = req.body;
+
+    const userDataQuery = `SELECT * FROM user WHERE user_id = ?`;
+
+    db.query(userDataQuery, [uid], (err, results) => {
+        if (err) {
+            console.error('Error querying database: ', err);
+            res.status(500).send('Internal Sever Error');
+            return;
+        }
+        if (results.length === 0) {
+            res.status(401).send('Username or password is incorrect');
+            return;
+        }
+        const hashedPassword = results[0].password;
+
+        bcrypt.compare(currentPasswordField, hashedPassword, (bcryptErr, isMatch) => {
+            if (bcryptErr) {
+                console.error('Error comparing passwords:', bcryptErr);
+                res.status(500).send('Internal Sever Error');
+                return;
+            }
+
+            // if the passwords match, allow user to update their password!
+            if (isMatch) {
+
+                // hash the password 
+                bcrypt.hash(newPasswordField, 10, (err, hashedNewPassword) => {
+                    if (err) {
+                        console.error('Error hashing password:', err);
+                        res.send('An error occured while updating the password.')
+                    }
+                    const updatePassQuery = `UPDATE user SET password = ? WHERE user_id = ?`;
+                    db.query(updatePassQuery, [hashedNewPassword], [uid], (err, result) => {
+                        if (err) {
+                            // handle error
+                        console.error("Error updating password:", err);
+                                res.send("An error occured while updating the password");
+                        return;
+                                }
+                    
+                    res.send('Your password has been updated successfully');
+                            console.log('password updated successfully');
+                        });
+                
+                )} else {
+                    res.status(401).send('Current password is incorrect');
+                }
+        
+            });
+           
+    });
+
+    });
