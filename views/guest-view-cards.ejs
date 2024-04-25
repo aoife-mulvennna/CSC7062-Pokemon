@@ -58,13 +58,19 @@
               data-bs-toggle="dropdown" aria-expanded="false">
               Rarity
             </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <% rarityResults.forEach((rarity)=> { %>
-                <li><a class="dropdown-item" href="#">
-                    <%=rarity.rarity_name%>
-                  </a></li>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <form action="/guest-view-cards/filter-rarity" method="GET">
+                <% rarityResults.forEach((rarity) => { %>
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="rarity_<%= rarity.rarity_id %>" name="rarity" value="<%= rarity.rarity_name%>">
+                    <label class="form-check-label" for="rarity_<%= rarity.rarity_id %>">
+                      <%= rarity.rarity_name %>
+                    </label>
+                  </div>
                 <% }); %>
-            </ul>
+                <button type="submit" class="btn btn-primary">Apply</button>
+              </form>
+            </div>
           </div>
         </div>
 
@@ -104,116 +110,7 @@
 
 
 
-      <!-- <div class="row">
-  <div class="col">
-Filter by stage
-<form action="/filter-by-stage-guest" method="GET">
-  <input type="hidden" name="stage_name" value="Basic">
-  <button type="submit" class="btn btn-primary mt-3">Basic</button>
-</form>
-<form action="/filter-by-stage-guest" method="GET">
-  <input type="hidden" name="stage_name" value="Stage 1">
-  <button type="submit" class="btn btn-primary mt-3">Stage 1</button>
-</form>
-<form action="/filter-by-stage-guest" method="GET">
-  <input type="hidden" name="stage_name" value="Stage 2">
-  <button type="submit" class="btn btn-primary mt-3">Stage 2</button>
-</form>
-  </div>
-  <div class="col">
-    Filter by set
-    <form action="/filter-by-set-guest" method="GET">
-      <input type="hidden" name="set_name" value="Base Set">
-      <button type="submit" class="btn btn-primary mt-3">Base Set</button>
-    </form>
-    <form action="/filter-by-set-guest" method="GET">
-      <input type="hidden" name="set_name" value="Jungle Set">
-      <button type="submit" class="btn btn-primary mt-3">Jungle Set</button>
-    </form>
-    <form action="/filter-by-set-guest" method="GET">
-      <input type="hidden" name="set_name" value="Fossil Set">
-      <button type="submit" class="btn btn-primary mt-3">Fossil Set</button>
-    </form>
-  </div>
-  <div class="col">
-    Filter by type
-    <div class="col">
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Electric">
-        <button type="submit" class="btn btn-primary mt-3">Electric</button>
-      </form>
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Psychic">
-        <button type="submit" class="btn btn-primary mt-3">Psychic</button>
-      </form>
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Fighting">
-        <button type="submit" class="btn btn-primary mt-3">Fighting</button>
-      </form>
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Normal">
-        <button type="submit" class="btn btn-primary mt-3">Normal</button>
-      </form>
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Flying">
-        <button type="submit" class="btn btn-primary mt-3">Flying</button>
-      </form>
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Rock">
-        <button type="submit" class="btn btn-primary mt-3">Rock</button>
-      </form>
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Ghost">
-        <button type="submit" class="btn btn-primary mt-3">Ghost</button>
-      </form>
-    </div>
-    <div class="col">
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Dark">
-        <button type="submit" class="btn btn-primary mt-3">Dark</button>
-      </form>
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Dragon">
-        <button type="submit" class="btn btn-primary mt-3">Dragon</button>
-      </form>
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Steel">
-        <button type="submit" class="btn btn-primary mt-3">Steel</button>
-      </form>
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Fairy">
-        <button type="submit" class="btn btn-primary mt-3">Fairy</button>
-      </form>
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="set_name" value="Poison">
-        <button type="submit" class="btn btn-primary mt-3">Poison</button>
-      </form>
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Ground">
-        <button type="submit" class="btn btn-primary mt-3">Ground</button>
-      </form>
-      <form action="/filter-by-type-guest" method="GET">
-        <input type="hidden" name="type_name" value="Bug">
-        <button type="submit" class="btn btn-primary mt-3">Bug</button>
-      </form>
-    </div>
-  </div>
- <div class="col">
-  Filter by rarity
-  <form action="/filter-by-rarity-guest" method="GET">
-    <input type="hidden" name="rarity_name" value="Rare">
-    <button type="submit" class="btn btn-primary mt-3">Rare</button>
-  </form>
-  <form action="/filter-by-rarity-guest" method="GET">
-    <input type="hidden" name="rarity_name" value="Common">
-    <button type="submit" class="btn btn-primary mt-3">Common</button>
-  </form>
-  <form action="/filter-by-rarity-guest" method="GET">
-    <input type="hidden" name="rarity_name" value="Uncommon">
-    <button type="submit" class="btn btn-primary mt-3">Uncommon</button>
-  </form>
- </div>
-</div> -->
+
 
       <hr>
       <% cards.forEach(card=> { %>
@@ -263,7 +160,6 @@ Filter by stage
 
     </div>
 
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
     </script>
     <script>
@@ -274,5 +170,8 @@ Filter by stage
     </script>
     <%-include ('footer')%>
 </body>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.16/css/bootstrap-multiselect.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.16/js/bootstrap-multiselect.js"></script>
 
 </html>

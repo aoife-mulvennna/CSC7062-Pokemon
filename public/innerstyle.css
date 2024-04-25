@@ -28,3 +28,10 @@
     width: 65%;
     margin: 0 auto; /* Automatically center the element horizontally */
 }
+#footer {
+  padding: 10px 10px 0px 10px;
+  bottom: 0;
+  width: 1500px;
+  height: 40px;
+  color: white;
+}
