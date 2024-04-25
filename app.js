@@ -486,11 +486,33 @@ app.get('/guest-view-cards', (req, res) => {
     INNER JOIN rarity r ON r.rarity_id = pc.rarity_id;`
 
 
+
     db.query(query, (err, results) => {
 
         if (err) throw err;
+        const stageQuery = `SELECT * FROM pokemon_stage`;
+        db.query(stageQuery, (err, stageResults) => {
+            if (err) throw err;
 
-        res.render('guest-view-cards', { cards: results, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' , sess_obj, currentPage: req.path});
+
+            const rarityQuery = `SELECT * FROM rarity`;
+            db.query(rarityQuery, (err, rarityResults) => {
+                if (err) throw err;
+
+                const typeQuery = `SELECT * FROM pokemon_type`;
+                db.query(typeQuery, (err, typeResults) => {
+                    if (err) throw err;
+
+                    const setQuery = `SELECT * FROM pokemon_set`;
+                    db.query(setQuery, (err, setResults) => {
+                        if (err) throw err;
+                        res.render('guest-view-cards', { cards: results, sess_obj, currentPage: req.path,stageResults, rarityResults, typeResults, setResults });
+                    })
+
+                })
+
+            })
+        })
     });
 
 });
@@ -805,9 +827,9 @@ app.get('/view-account', (req, res) => {
                 return;
             }
 
-        res.render('view-account', { details: accountDetails, logoPath: 'Pokemon_Logo.png', picUrl: picture_url, username: username, age: age, email: email,  profilePictures: profilePictures, sess_obj, userdata:userData, currentPage: req.path })
+            res.render('view-account', { details: accountDetails, logoPath: 'Pokemon_Logo.png', picUrl: picture_url, username: username, age: age, email: email, profilePictures: profilePictures, sess_obj, userdata: userData, currentPage: req.path })
+        });
     });
-});
 });
 
 
