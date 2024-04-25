@@ -10,30 +10,7 @@
 </head>
 
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="/">
-            <img class="logo" src="<%=logoPath %>" alt="logo">
-          </a>
-          <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-            <div class="navbar-nav">
-              <a class="nav-link active" aria-current="page" href="guest-access">Home</a>
-              <a class="nav-link"  href="guest-view-cards">Browse Cards</a>
-              <a class="nav-link" href="sign-up">Create an Account</a>
-              <a class="nav-link" href="login">Login to Account</a>
-    
-            </div>
-          </div>
-          <div class="navbar-nav ml-auto d-flex align-items-center">
-            <div>
-                <p class="text-white mb-0">You are logged in as a guest!</p>
-            </div>
-            <img class="display-profile-pic ml-3" src="<%=ballPath%>" alt="Profile Picture">
-        </div>
-        </div>
-      </nav>
-
+      <%- include ('navbar') %>
 
     <h2> Hello guest, welcome </h2>
 

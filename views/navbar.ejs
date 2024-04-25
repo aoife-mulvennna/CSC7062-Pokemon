@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon TCG - Home</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/innerstyle.css">
+</head>
+
+<body>
+
+    
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <img class="logo" src="Pokemon_Logo.png" alt="logo">
+                </a>
+
+                <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                    <div class="navbar-nav">
+                        <% if (!sess_obj.authen){ %>
+                            <a class="nav-link <%= currentPage === '/guest-access' ? 'active' : '' %>" href="guest-access">Home</a>
+                            <a class="nav-link <%= currentPage === '/guest-view-cards' ? 'active' : '' %>" href="guest-view-cards">Browse Cards</a>
+                            <a class="nav-link <%= currentPage === '/sign-up' ? 'active' : '' %>" href="sign-up">Create an Account</a>
+                            <a class="nav-link <%= currentPage === '/login' ? 'active' : '' %>" href="login">Login to Account</a>
+
+                    </div>
+                </div>
+                <div class="navbar-nav ml-auto d-flex align-items-center">
+                    <div>
+                        <p class="text-white mb-0">You are logged in as a guest!</p>
+                    </div>
+                    <img class="display-profile-pic ml-3" src="Poke_Ball.webp" alt="Profile Picture">
+                </div>
+
+                <% } else { %>
+                    <a class="nav-link <%= currentPage === '/home' ? 'active' : '' %>" href="home">Home</a>
+                    <a class="nav-link <%= currentPage === '/view-cards' ? 'active' : '' %>" href="view-cards">Browse Cards</a>
+                    <a class="nav-link <%= currentPage === '/other-collections' ? 'active' : '' %>" href="other-collections">Browse Collections</a>
+                    <a class="nav-link <%= currentPage === '/view-collection' ? 'active' : '' %>" href="view-collection">View My Collection</a>
+
+            </div>
+            </div>
+            <div class="navbar-nav ml-auto d-flex align-items-center">
+                <div>
+                    <!-- <p class="text-white mb-0">You are logged in as !Insert username here! !</p> -->
+                    <p class="text-white mb-0">You are logged in as <%=userdata.username%>!</p>
+                    <p class="text-white mb-0"><a class="text-white" href="view-account">View My Account</a></p>
+                </div>
+                <img class="display-profile-pic ml-3" src="<%=picUrl%>" alt="Profile Picture">
+            </div>
+            <% } %>
+                </div>
+        </nav>
+
+</body>
+
+</html>

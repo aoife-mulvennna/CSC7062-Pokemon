@@ -99,7 +99,7 @@ app.get('/view-cards', (req, res) => {
             const userData = userResults[0];
             username = userData.username;
             const picUrl = userData.profile_picture_url;
-            res.render('view-cards', { cards: cardsResults, logoPath: 'Pokemon_Logo.png', username: username, picUrl: picUrl });
+            res.render('view-cards', { cards: cardsResults, logoPath: 'Pokemon_Logo.png', username: username, picUrl: picUrl, sess_obj, userdata: userData, currentPage: req.path });
         });
     });
 });
@@ -145,8 +145,7 @@ app.get('/view-collection', (req, res) => {
             const userData = userResults[0];
             username = userData.username;
             const picUrl = userData.profile_picture_url;
-            res.render('view-collection', { cards: results, username: username, logoPath: 'Pokemon_Logo.png', picUrl: picUrl });
-            console.log(results[0]);
+            res.render('view-collection', { cards: results, username: username, logoPath: 'Pokemon_Logo.png', picUrl: picUrl, sess_obj, userdata: userData, currentPage: req.path });
         });
 
     });
@@ -178,7 +177,7 @@ app.get('/home', (req, res) => {
 
             const userData = results[0];
             const picUrl = userData.profile_picture_url;
-            res.render('home', { logoPath: 'Pokemon_Logo.png', userdata: userData, picUrl: picUrl });
+            res.render('home', { logoPath: 'Pokemon_Logo.png', userdata: userData, picUrl: picUrl, sess_obj, currentPage: req.path });
         });
     } else {
         res.send("Acccess Denied");
@@ -459,20 +458,24 @@ app.get('/other-collections', (req, res) => {
                 res.status(404).send('Username not found');
                 return;
             }
+            const userData = usernameResult[0];
             const username = usernameResult[0].username;
-            console.log(username);
             const picURL = results[0].profile_picture_url;
-            res.render('other-collections', { collections: results, logoPath: 'Pokemon_Logo.png', username: username, picUrl: picURL });
+            res.render('other-collections', { collections: results, logoPath: 'Pokemon_Logo.png', username: username, picUrl: picURL, sess_obj, userdata: userData, currentPage: req.path });
         })
 
     });
 });
 
 app.get('/guest-access', (req, res) => {
-    res.render('guest-access', { logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' });
+    let sess_obj = req.session;
+    sess_obj.authen = false;
+    res.render('guest-access', { logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp', sess_obj, currentPage: req.path });
 });
 
 app.get('/guest-view-cards', (req, res) => {
+    let sess_obj = req.session;
+    sess_obj.authen = false;
     const query = `
     SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, ps.pokemon_stage_name, pc.attack, r.rarity_name, pc.weakness, psn.pokemon_set_name, pc.evolve_from 
     FROM pokemon_card pc 
@@ -487,7 +490,7 @@ app.get('/guest-view-cards', (req, res) => {
 
         if (err) throw err;
 
-        res.render('guest-view-cards', { cards: results, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' });
+        res.render('guest-view-cards', { cards: results, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' , sess_obj, currentPage: req.path});
     });
 
 });
@@ -546,6 +549,7 @@ app.get('/view-card-in-collection', (req, res) => {
                     return;
                 }
 
+                const userData = usernameResult[0];
                 const userRating = ratingResult.length > 0 ? ratingResult[0].rating_value : null;
 
                 const username = usernameResult[0].username;
@@ -555,7 +559,7 @@ app.get('/view-card-in-collection', (req, res) => {
                 console.log(collectionResults);
                 res.render('view-card-in-collection', {
                     cards: collectionResults, logoPath: 'Pokemon_Logo.png',
-                    username: username, picUrl: picUrl, ownerUsername: ownerUsername, ownerPic: ownerPic, collectionId: collectionId, userRating: userRating
+                    username: username, picUrl: picUrl, ownerUsername: ownerUsername, ownerPic: ownerPic, collectionId: collectionId, userRating: userRating, sess_obj, userdata: userData, currentPage: req.path
                 });
             });
         });
@@ -784,6 +788,7 @@ app.get('/view-account', (req, res) => {
             res.status(500).send('Internal Server Error');
             return;
         }
+        const userData = accountDetails[0];
         const picture_url = accountDetails[0].profile_picture_url;
         console.log(picture_url);
         const username = accountDetails[0].username;
@@ -800,7 +805,7 @@ app.get('/view-account', (req, res) => {
                 return;
             }
 
-        res.render('view-account', { details: accountDetails, logoPath: 'Pokemon_Logo.png', picUrl: picture_url, username: username, age: age, email: email,  profilePictures: profilePictures })
+        res.render('view-account', { details: accountDetails, logoPath: 'Pokemon_Logo.png', picUrl: picture_url, username: username, age: age, email: email,  profilePictures: profilePictures, sess_obj, userdata:userData, currentPage: req.path })
     });
 });
 });
