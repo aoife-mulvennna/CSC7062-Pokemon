@@ -911,6 +911,10 @@ app.get('/guest-view-cards/filter', (req, res) => {
     console.log('Selected rarities:', selectedRarities);
     const selectedStages = req.query.stage;
     console.log('Selected stages:', selectedStages);
+    const selectedSets = req.query.set;
+    console.log('Selected sets:', selectedSets);
+    const selectedTypes = req.query.type;
+    console.log('Selected types:', selectedTypes);
     let query = `
     SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, 
            ps.pokemon_stage_name, pc.attack, r.rarity_name, pc.weakness, 
@@ -926,26 +930,46 @@ app.get('/guest-view-cards/filter', (req, res) => {
         if (!Array.isArray(selectedRarities)) {
             query += ` AND r.rarity_name = '${selectedRarities}'`;
         } else {
-            query += ` AND r.rarity_name = ('${selectedRarities.join("','")}')`;
+            query += ` AND r.rarity_name IN ('${selectedRarities.join("','")}')`;
+        }
+    }
+
+    if (selectedStages && selectedStages.length > 0) {
+        if (!Array.isArray(selectedStages)) {
+            query += ` AND ps.pokemon_stage_name = '${selectedStages}'`;
+        } else {
+            query += ` AND ps.pokemon_stage_name IN ('${selectedStages.join("','")}')`;
+        }
+    }
+
+    if (selectedSets && selectedSets.length > 0) {
+        if (!Array.isArray(selectedSets)) {
+            query += ` AND psn.pokemon_set_name = '${selectedSets}'`;
+        } else {
+            query += ` AND psn.pokemon_set_name IN ('${selectedSets.join("','")}')`;
+        }
+    }
+
+    if (selectedTypes && selectedTypes.length > 0) {
+       
+        if (!Array.isArray(selectedTypes)) {
+            query += ` AND pt.pokemon_type_name = '${selectedTypes}'`;
+        } else {
+            query += ` AND pt.pokemon_type_name IN ('${selectedTypes.join("','")}')`;
         }
     }
     
-    if (!Array.isArray(selectedStages)) {
-        console.log('Selected Stage', selectedStages);
-        let stageFilter = ` AND ps.pokemon_stage_name = ('${selectedStages}') `;
-        query += stageFilter;
-    }
-    else if (selectedStages.length > 1) {
-        let  stageFilter = `  AND ps.pokemon_stage_name = (`;
-        for (let i = 0; i < selectedStages.length; i++) {
-            stageFilter += `'${selectedStages[i]}'`;
-            if (i <selectedStages.length - 1) {
-                stageFilter += `, `;
-            }
-        }
-        stageFilter += `)`;
-        query +=  stageFilter;
-    }
+    // if (typeof selectedStages !== 'undefined' && selectedStages.length >= 1) {
+    //     let  stageFilter = `  AND ps.pokemon_stage_name = (`;
+    //     for (let i = 0; i < selectedStages.length; i++) {
+    //         stageFilter += `'${selectedStages[i]}'`;
+    //         if (i <selectedStages.length - 1) {
+    //             stageFilter += `, `;
+    //         }
+    //     }
+    //     stageFilter += `)`;
+    //     query +=  stageFilter;
+    // }
 
     console.log('Generated SQL Query:', query);
     db.query(query, (err, results) => {
@@ -963,6 +987,7 @@ app.get('/guest-view-cards/filter', (req, res) => {
                     const setQuery = `SELECT * FROM pokemon_set`;
                     db.query(setQuery, (err, setResults) => {
                         // if (err) throw err;
+                        console.log(results);
                         res.render('guest-view-cards', { cards: results, sess_obj: false, currentPage: req.path, stageResults, rarityResults, typeResults, setResults });
                     });
                 })

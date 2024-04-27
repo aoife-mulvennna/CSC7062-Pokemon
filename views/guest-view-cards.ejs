@@ -90,13 +90,20 @@
               data-bs-toggle="dropdown" aria-expanded="false">
               Type
             </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <% typeResults.forEach((type)=> { %>
-                <li><a class="dropdown-item" href="#">
-                    <%=type.pokemon_type_name%>
-                  </a></li>
-                <% }); %>
-            </ul>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <form action="/guest-view-cards/filter" method="GET">
+                <% typeResults.forEach((type)=> { %>
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="type_<%= type.pokemon_type_id %>" name="type"
+                      value="<%= type.pokemon_type_name%>">
+                    <label class="form-check-label" for="type_<%= type.pokemon_type_id %>">
+                      <%= type.pokemon_type_name %>
+                    </label>
+                  </div>
+                  <% }); %>
+                    <button type="submit" class="btn btn-primary">Apply</button>
+              </form>
+            </div>
           </div>
         </div>
 
@@ -106,13 +113,22 @@
               data-bs-toggle="dropdown" aria-expanded="false">
               Set
             </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <% setResults.forEach((set)=> { %>
-                <li><a class="dropdown-item" href="#">
-                    <%=set.pokemon_set_name%>
-                  </a></li>
-                <% }); %>
-            </ul>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <form action="/guest-view-cards/filter" method="GET">
+                <% setResults.forEach((set)=> { %>
+                  <div class="form-check">
+                    <input type="checkbox" class="form-check-input" id="set_<%= set.pokemon_set_id %>" name="set"
+                      value="<%= set.pokemon_set_name%>">
+                    <label class="form-check-label" for="set_<%= set.pokemon_set_id %>">
+                      <%= set.pokemon_set_name %>
+                    </label>
+                  </div>
+                  <% }); %>
+                    <button type="submit" class="btn btn-primary">Apply</button>
+              </form>
+            </div>
+
+      
           </div>
         </div>
       </div>
@@ -123,7 +139,7 @@
 
 
       <hr>
-      <!-- <% cards.forEach(card=> { %>
+      <% cards.forEach(card=> { %>
         <div class="row">
           <div class="col">
             <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="210">
@@ -165,7 +181,7 @@
         </div>
 
         <hr>
-        <% }); %> -->
+        <% }); %> 
 
           <div class="container">
             <div class="row">
@@ -282,6 +298,14 @@
       `;
     }
   });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
+</script>
+<script>
+  var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+  var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+    return new bootstrap.Dropdown(dropdownToggleEl)
+  })
 </script>
 
 </html>
