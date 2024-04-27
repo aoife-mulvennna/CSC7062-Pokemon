@@ -17,21 +17,21 @@
     <div class="container mt-5">
         <h4>Username</h4>
         <p>
-            <%=username%>
+            <%=userdata.username%>
         </p>
         <hr>
         <h4>Email Address</h4>
         <p>
-            <%=email%>
+            <%=userdata.email%>
         </p>
         <hr>
         <h4>Age</h4>
         <p>
-            <%=age%>
+            <%=userdata.age%>
         </p>
         <hr>
         <h4>Profile Picture</h4>
-        <p><img class="display-profile-pic ml-3" src="<%=picUrl%>" alt="Profile Picture">
+        <p><img class="display-profile-pic ml-3" src="<%=userdata.profile_picture_url%>" alt="Profile Picture">
             <button class="btn btn-secondary mt-3">Change Profile Picture</button>
        
         </p>

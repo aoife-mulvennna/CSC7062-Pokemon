@@ -38,230 +38,211 @@
             </ul>
           </div>
         </div>
+
+
         <div class="col">
           <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
               data-bs-toggle="dropdown" aria-expanded="false">
-              Stage
+              Filter
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <form action="/guest-view-cards/filter" method="GET">
-                <% stageResults.forEach((stage)=> { %>
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="stage_<%= stage.pokemon_stage_id %>"
-                      name="stage" value="<%= stage.pokemon_stage_name%>">
-                    <label class="form-check-label" for="stage_<%= stage.pokemon_stage_id %>">
-                      <%= stage.pokemon_stage_name %>
-                    </label>
+              <form action="/guest-view-cards" method="GET">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-6">
+                    <div>
+                      <h4>Set</h4>
+                      <% setResults.forEach((set)=> { %>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="set_<%= set.pokemon_set_id %>" name="set"
+                            value="<%= set.pokemon_set_name%>">
+                          <label class="form-check-label" for="set_<%= set.pokemon_set_id %>">
+                            <%= set.pokemon_set_name %>
+                          </label>
+                        </div>
+                        <% }); %>
+                    </div>
+                    <div>
+                      <h4>Stage</h4>
+                      <% stageResults.forEach((stage)=> { %>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="stage_<%= stage.pokemon_stage_id %>"
+                            name="stage" value="<%= stage.pokemon_stage_name%>">
+                          <label class="form-check-label" for="stage_<%= stage.pokemon_stage_id %>">
+                            <%= stage.pokemon_stage_name %>
+                          </label>
+                        </div>
+                        <% }); %>
+                    </div>
+                    <div >
+                      <h4>Rarity</h4>
+                      <% rarityResults.forEach((rarity)=> { %>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="rarity_<%= rarity.rarity_id %>"
+                            name="rarity" value="<%= rarity.rarity_name%>">
+                          <label class="form-check-label" for="rarity_<%= rarity.rarity_id %>">
+                            <%= rarity.rarity_name %>
+                          </label>
+                        </div>
+                        <% }); %>
+                    </div>
                   </div>
-                  <% }); %>
+                    <div class="col-6 h-25">
+                      <h4>Type</h4>
+                      <div>
+                      <% typeResults.forEach((type)=> { %>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="type_<%= type.pokemon_type_id %>"
+                            name="type" value="<%= type.pokemon_type_name%>">
+                          <label class="form-check-label" for="type_<%= type.pokemon_type_id %>">
+                            <%= type.pokemon_type_name %>
+                          </label>
+                        </div>
+                        <% }); %>
+                      </div>
+                    </div>
+
                     <button type="submit" class="btn btn-primary">Apply</button>
               </form>
             </div>
           </div>
+
         </div>
+      </div>
+    </div>
 
+
+
+
+
+
+    <hr>
+    <% cards.forEach(card=> { %>
+      <div class="row">
         <div class="col">
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              Rarity
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <form action="/guest-view-cards/filter" method="GET">
-                <% rarityResults.forEach((rarity)=> { %>
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="rarity_<%= rarity.rarity_id %>" name="rarity"
-                      value="<%= rarity.rarity_name%>">
-                    <label class="form-check-label" for="rarity_<%= rarity.rarity_id %>">
-                      <%= rarity.rarity_name %>
-                    </label>
-                  </div>
-                  <% }); %>
-                    <button type="submit" class="btn btn-primary">Apply</button>
-              </form>
-            </div>
-          </div>
+          <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="210">
         </div>
-
         <div class="col">
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              Type
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <form action="/guest-view-cards/filter" method="GET">
-                <% typeResults.forEach((type)=> { %>
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="type_<%= type.pokemon_type_id %>" name="type"
-                      value="<%= type.pokemon_type_name%>">
-                    <label class="form-check-label" for="type_<%= type.pokemon_type_id %>">
-                      <%= type.pokemon_type_name %>
-                    </label>
-                  </div>
-                  <% }); %>
-                    <button type="submit" class="btn btn-primary">Apply</button>
-              </form>
-            </div>
-          </div>
+          <ul class="list-unstyled card-details">
+            <li><strong class="title">Name: </strong>
+              <%= card.pokemon_name %>
+            </li>
+            <li><strong class="title">Type: </strong>
+              <%= card.pokemon_type_name %>
+            </li>
+            <li><strong class="title">Hp: </strong>
+              <%= card.hp %>
+            </li>
+            <li><strong class="title">Stage: </strong>
+              <%= card.pokemon_stage_name %>
+            </li>
+            <li><strong class="title">Attack: </strong>
+              <%= card.attack %>
+            </li>
+            <li><strong class="title">Rarity: </strong>
+              <%= card.rarity_name %>
+            </li>
+            <li><strong class="title">Weakness: </strong>
+              <%= card.weakness %>
+            </li>
+            <li><strong class="title">Set: </strong>
+              <%= card.pokemon_set_name %>
+            </li>
+            <li><strong class="title">Evolves from: </strong>
+              <%= card.evolve_from || 'None' %>
+            </li>
+          </ul>
         </div>
-
         <div class="col">
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              Set
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <form action="/guest-view-cards/filter" method="GET">
-                <% setResults.forEach((set)=> { %>
-                  <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="set_<%= set.pokemon_set_id %>" name="set"
-                      value="<%= set.pokemon_set_name%>">
-                    <label class="form-check-label" for="set_<%= set.pokemon_set_id %>">
-                      <%= set.pokemon_set_name %>
-                    </label>
-                  </div>
-                  <% }); %>
-                    <button type="submit" class="btn btn-primary">Apply</button>
-              </form>
-            </div>
-
-      
-          </div>
+          Create an account to add to your collection!
         </div>
       </div>
 
-
-
-
-
-
       <hr>
-      <% cards.forEach(card=> { %>
-        <div class="row">
-          <div class="col">
-            <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="210">
-          </div>
-          <div class="col">
-            <ul class="list-unstyled card-details">
-              <li><strong class="title">Name: </strong>
-                <%= card.pokemon_name %>
-              </li>
-              <li><strong class="title">Type: </strong>
-                <%= card.pokemon_type_name %>
-              </li>
-              <li><strong class="title">Hp: </strong>
-                <%= card.hp %>
-              </li>
-              <li><strong class="title">Stage: </strong>
-                <%= card.pokemon_stage_name %>
-              </li>
-              <li><strong class="title">Attack: </strong>
-                <%= card.attack %>
-              </li>
-              <li><strong class="title">Rarity: </strong>
-                <%= card.rarity_name %>
-              </li>
-              <li><strong class="title">Weakness: </strong>
-                <%= card.weakness %>
-              </li>
-              <li><strong class="title">Set: </strong>
-                <%= card.pokemon_set_name %>
-              </li>
-              <li><strong class="title">Evolves from: </strong>
-                <%= card.evolve_from || 'None' %>
-              </li>
-            </ul>
-          </div>
-          <div class="col">
-            Create an account to add to your collection!
-          </div>
-        </div>
+      <% }); %>
 
-        <hr>
-        <% }); %> 
+        <div class="container">
+          <div class="row">
+            <% cards.forEach((card, index)=> { %>
+              <div class="col-md-3 mb-3">
+                <button type="button" class="btn mt-3" data-bs-toggle="modal" data-bs-target="#myModal_<%= index %>">
+                  <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="250">
+                </button>
+                <div class="m-4">
+                  <!-- The Modal -->
+                  <div id="myModal_<%= index %>" class="modal fade" tabindex="-1">
+                    <div class="modal-dialog ">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title">
+                            <%= card.pokemon_name %>
+                          </h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal">
+                          </button>
+                        </div>
 
-          <div class="container">
-            <div class="row">
-              <% cards.forEach((card, index)=> { %>
-                <div class="col-md-3 mb-3">
-                  <button type="button" class="btn mt-3" data-bs-toggle="modal" data-bs-target="#myModal_<%= index %>">
-                    <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="250">
-                  </button>
-                  <div class="m-4">
-                    <!-- The Modal -->
-                    <div id="myModal_<%= index %>" class="modal fade" tabindex="-1">
-                      <div class="modal-dialog ">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title"><%= card.pokemon_name %></h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal">
-                            </button>
-                          </div>
-                         
-                          <div class="modal-body">
-                            <div class="row">
-                              <div class="col-md-6">
-                                <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="210">
-                              </div>
+                        <div class="modal-body">
+                          <div class="row">
+                            <div class="col-md-6">
+                              <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="210">
+                            </div>
 
-                              <div class="col-md-6">
-                                <ul class="list-unstyled card-details">
-                                  <!-- <li><strong class="title">Name: </strong>
+                            <div class="col-md-6">
+                              <ul class="list-unstyled card-details">
+                                <!-- <li><strong class="title">Name: </strong>
                                     <%= card.pokemon_name %>
                                   </li> -->
-                                  <li><strong class="title">Type: </strong>
-                                    <%= card.pokemon_type_name %>
-                                  </li>
-                                  <li><strong class="title">Hp: </strong>
-                                    <%= card.hp %>
-                                  </li>
-                                  <li><strong class="title">Stage: </strong>
-                                    <%= card.pokemon_stage_name %>
-                                  </li>
-                                  <li><strong class="title">Attack: </strong>
-                                    <%= card.attack %>
-                                  </li>
-                                  <li><strong class="title">Rarity: </strong>
-                                    <%= card.rarity_name %>
-                                  </li>
-                                  <li><strong class="title">Weakness: </strong>
-                                    <%= card.weakness %>
-                                  </li>
-                                  <li><strong class="title">Set: </strong>
-                                    <%= card.pokemon_set_name %>
-                                  </li>
-                                  <li><strong class="title">Evolves from: </strong>
-                                    <%= card.evolve_from || 'None' %>
-                                  </li>
-                                </ul>
+                                <li><strong class="title">Type: </strong>
+                                  <%= card.pokemon_type_name %>
+                                </li>
+                                <li><strong class="title">Hp: </strong>
+                                  <%= card.hp %>
+                                </li>
+                                <li><strong class="title">Stage: </strong>
+                                  <%= card.pokemon_stage_name %>
+                                </li>
+                                <li><strong class="title">Attack: </strong>
+                                  <%= card.attack %>
+                                </li>
+                                <li><strong class="title">Rarity: </strong>
+                                  <%= card.rarity_name %>
+                                </li>
+                                <li><strong class="title">Weakness: </strong>
+                                  <%= card.weakness %>
+                                </li>
+                                <li><strong class="title">Set: </strong>
+                                  <%= card.pokemon_set_name %>
+                                </li>
+                                <li><strong class="title">Evolves from: </strong>
+                                  <%= card.evolve_from || 'None' %>
+                                </li>
+                              </ul>
 
-                              </div>
                             </div>
-                          </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-
-                  <% }); %>
                 </div>
-            </div>
+              </div>
+
+              <% }); %>
           </div>
+        </div>
+        </div>
 
 
-          <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
-          </script>
-          <script>
-            var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
-            var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
-              return new bootstrap.Dropdown(dropdownToggleEl)
-            })
-          </script>
-          <%-include ('footer')%>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
+        </script>
+        <script>
+          var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+          var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+            return new bootstrap.Dropdown(dropdownToggleEl)
+          })
+        </script>
+        <%-include ('footer')%>
 </body>
 
 <link rel="stylesheet"

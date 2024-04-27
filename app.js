@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const flash = require('connect-flash');
 
 const mysql = require('mysql2');
 
@@ -9,6 +10,7 @@ app.set('view engine', 'ejs');
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
+app.use(flash ());
 
 const cookieParser = require('cookie-parser');
 const sessions = require('express-session');
@@ -60,7 +62,7 @@ app.get('/', (req, res) => {
 });
 
 app.get('/view-cards', (req, res) => {
-
+    req.flash("message", "testing flash messags")
     let sess_obj = req.session;
     const uid = sess_obj.authen;
 
@@ -393,18 +395,23 @@ app.post('/add-to-collection', getUserIdFromSession, (req, res) => {
         db.query(insertQuery, [collectionID, cardID], (err, result) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') { // Handle duplicate entry error
-                    res.status(400).send('This card is already in your collection');
+                    // res.status(400).send('This card is already in your collection');
+                    res.status(400).json({ message: 'This card is already in your collection' });
                 } else {
                     console.error("Error adding to collection:", err);
                     res.status(500).send('Internal Server Error');
                 }
             } else {
-                res.redirect('/view-cards');
+                console.log("successfully added to collection");
+                res.status(200).json({ message: 'Card added to your collection successfully', redirectUrl: '/view-cards' });
+
+                // res.redirect('/view-cards');
             }
         });
 
     });
 });
+
 
 
 
@@ -471,50 +478,6 @@ app.get('/guest-access', (req, res) => {
     let sess_obj = req.session;
     sess_obj.authen = false;
     res.render('guest-access', { logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp', sess_obj, currentPage: req.path });
-});
-
-app.get('/guest-view-cards', (req, res) => {
-    let sess_obj = req.session;
-    sess_obj.authen = false;
-    const query = `
-    SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, ps.pokemon_stage_name, pc.attack, r.rarity_name, pc.weakness, psn.pokemon_set_name, pc.evolve_from 
-    FROM pokemon_card pc 
-
-    INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
-    INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-    INNER JOIN pokemon_set psn ON psn.pokemon_set_id = pc.pokemon_set_id
-    INNER JOIN rarity r ON r.rarity_id = pc.rarity_id;`
-
-
-
-    db.query(query, (err, results) => {
-
-        // if (err) throw err;
-        const stageQuery = `SELECT * FROM pokemon_stage`;
-        db.query(stageQuery, (err, stageResults) => {
-            // if (err) throw err;
-
-
-            const rarityQuery = `SELECT * FROM rarity`;
-            db.query(rarityQuery, (err, rarityResults) => {
-                // if (err) throw err;
-
-                const typeQuery = `SELECT * FROM pokemon_type`;
-                db.query(typeQuery, (err, typeResults) => {
-                    // if (err) throw err;
-
-                    const setQuery = `SELECT * FROM pokemon_set`;
-                    db.query(setQuery, (err, setResults) => {
-                        // if (err) throw err;
-                        res.render('guest-view-cards', { cards: results, sess_obj, currentPage: req.path, stageResults, rarityResults, typeResults, setResults });
-                    })
-
-                })
-
-            })
-        })
-    });
-
 });
 
 // Example route accessible to authenticated users only
@@ -642,161 +605,6 @@ app.get('/ratings/:collectionId', (req, res) => {
     });
 });
 
-////////////////FILTERS///////////////////
-app.get('/filter-by-stage-guest', (req, res) => {
-    const stageName = req.query.stage_name;
-    const filterStageQuery = `SELECT * FROM pokemon_card pc
-INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
-INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
-INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
-WHERE ps.pokemon_stage_name = ?`;
-    db.query(filterStageQuery, [stageName], (err, filteredResults) => {
-        if (err) {
-            console.error("Error finding results", err);
-            res.status(500).send('Internal Server Error')
-            return;
-        }
-        res.render('guest-view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
-    });
-
-});
-
-app.get('/filter-by-set-guest', (req, res) => {
-    const setName = req.query.set_name;
-    const filterSetQuery = `SELECT * FROM pokemon_card pc
-INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
-INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
-INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
-WHERE pst.pokemon_set_name = ?`;
-
-    db.query(filterSetQuery, [setName], (err, filteredResults) => {
-        if (err) {
-            console.error("Error finding results", err);
-            res.status(500).send('Internal Server Error')
-            return;
-        }
-        res.render('guest-view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
-    });
-
-});
-
-app.get('/filter-by-type-guest', (req, res) => {
-    const typeName = req.query.type_name;
-    const filterTypeQuery = `SELECT * FROM pokemon_card pc
-INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
-INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
-INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
-WHERE pt.pokemon_type_name = ?`;
-
-    db.query(filterTypeQuery, [typeName], (err, filteredResults) => {
-        if (err) {
-            console.error("Error finding results", err);
-            res.status(500).send('Internal Server Error')
-            return;
-        }
-        res.render('guest-view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
-    });
-});
-app.get('/filter-by-rarity-guest', (req, res) => {
-    const rarityName = req.query.rarity_name;
-    const filterRarityQuery = `SELECT * FROM pokemon_card pc
-INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
-INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
-INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
-WHERE r.rarity_name = ?`;
-
-    db.query(filterRarityQuery, [rarityName], (err, filteredResults) => {
-        if (err) {
-            console.error("Error finding results", err);
-            res.status(500).send('Internal Server Error')
-            return;
-        }
-        res.render('guest-view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
-    });
-});
-
-/////view-cards-member////////
-app.get('/filter-by-stage', (req, res) => {
-    const stageName = req.query.stage_name;
-    const filterStageQuery = `SELECT * FROM pokemon_card pc
-INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
-INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
-INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
-WHERE ps.pokemon_stage_name = ?`;
-    db.query(filterStageQuery, [stageName], (err, filteredResults) => {
-        if (err) {
-            console.error("Error finding results", err);
-            res.status(500).send('Internal Server Error')
-            return;
-        }
-        res.render('view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
-    });
-
-});
-
-app.get('/filter-by-set', (req, res) => {
-    const setName = req.query.set_name;
-    const filterSetQuery = `SELECT * FROM pokemon_card pc
-INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
-INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
-INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
-WHERE pst.pokemon_set_name = ?`;
-
-    db.query(filterSetQuery, [setName], (err, filteredResults) => {
-        if (err) {
-            console.error("Error finding results", err);
-            res.status(500).send('Internal Server Error')
-            return;
-        }
-        res.render('view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
-    });
-
-});
-
-app.get('/filter-by-type-guest', (req, res) => {
-    const typeName = req.query.type_name;
-    const filterTypeQuery = `SELECT * FROM pokemon_card pc
-INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
-INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
-INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
-WHERE pt.pokemon_type_name = ?`;
-
-    db.query(filterTypeQuery, [typeName], (err, filteredResults) => {
-        if (err) {
-            console.error("Error finding results", err);
-            res.status(500).send('Internal Server Error')
-            return;
-        }
-        res.render('guest-view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
-    });
-});
-
-app.get('/filter-by-rarity-guest', (req, res) => {
-    const rarityName = req.query.rarity_name;
-    const filterRarityQuery = `SELECT * FROM pokemon_card pc
-INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
-INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
-INNER JOIN pokemon_set pst ON pst.pokemon_set_id = pc.pokemon_set_id
-WHERE r.rarity_name = ?`;
-
-    db.query(filterRarityQuery, [rarityName], (err, filteredResults) => {
-        if (err) {
-            console.error("Error finding results", err);
-            res.status(500).send('Internal Server Error')
-            return;
-        }
-        res.render('guest-view-cards', { cards: filteredResults, logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp' })
-    });
-});
-
 app.get('/view-account', (req, res) => {
 
     let sess_obj = req.session;
@@ -811,12 +619,6 @@ app.get('/view-account', (req, res) => {
             return;
         }
         const userData = accountDetails[0];
-        const picture_url = accountDetails[0].profile_picture_url;
-        console.log(picture_url);
-        const username = accountDetails[0].username;
-        const age = accountDetails[0].age;
-        const email = accountDetails[0].email_address;
-
 
         // query for profile pictures
         const getProfilePicturesQuery = `SELECT profile_picture_id, profile_picture_url FROM profile_picture`;
@@ -827,7 +629,7 @@ app.get('/view-account', (req, res) => {
                 return;
             }
 
-            res.render('view-account', { details: accountDetails, logoPath: 'Pokemon_Logo.png', picUrl: picture_url, username: username, age: age, email: email, profilePictures: profilePictures, sess_obj, userdata: userData, currentPage: req.path })
+            res.render('view-account', { details: accountDetails, logoPath: 'Pokemon_Logo.png',   profilePictures: profilePictures, sess_obj, userdata: userData, currentPage: req.path })
         });
     });
 });
@@ -904,7 +706,7 @@ app.get('/guest-view-cards/sort', (req, res) => {
     });
 });
 
-app.get('/guest-view-cards/filter', (req, res) => {
+app.get('/guest-view-cards', (req, res) => {
     let sess_obj = req.session;
     sess_obj.authen = false;
     const selectedRarities = req.query.rarity;
@@ -951,26 +753,13 @@ app.get('/guest-view-cards/filter', (req, res) => {
     }
 
     if (selectedTypes && selectedTypes.length > 0) {
-       
+
         if (!Array.isArray(selectedTypes)) {
             query += ` AND pt.pokemon_type_name = '${selectedTypes}'`;
         } else {
             query += ` AND pt.pokemon_type_name IN ('${selectedTypes.join("','")}')`;
         }
     }
-    
-    // if (typeof selectedStages !== 'undefined' && selectedStages.length >= 1) {
-    //     let  stageFilter = `  AND ps.pokemon_stage_name = (`;
-    //     for (let i = 0; i < selectedStages.length; i++) {
-    //         stageFilter += `'${selectedStages[i]}'`;
-    //         if (i <selectedStages.length - 1) {
-    //             stageFilter += `, `;
-    //         }
-    //     }
-    //     stageFilter += `)`;
-    //     query +=  stageFilter;
-    // }
-
     console.log('Generated SQL Query:', query);
     db.query(query, (err, results) => {
         // if (err) throw err;
