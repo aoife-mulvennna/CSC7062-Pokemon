@@ -489,23 +489,23 @@ app.get('/guest-view-cards', (req, res) => {
 
     db.query(query, (err, results) => {
 
-        if (err) throw err;
+        // if (err) throw err;
         const stageQuery = `SELECT * FROM pokemon_stage`;
         db.query(stageQuery, (err, stageResults) => {
-            if (err) throw err;
+            // if (err) throw err;
 
 
             const rarityQuery = `SELECT * FROM rarity`;
             db.query(rarityQuery, (err, rarityResults) => {
-                if (err) throw err;
+                // if (err) throw err;
 
                 const typeQuery = `SELECT * FROM pokemon_type`;
                 db.query(typeQuery, (err, typeResults) => {
-                    if (err) throw err;
+                    // if (err) throw err;
 
                     const setQuery = `SELECT * FROM pokemon_set`;
                     db.query(setQuery, (err, setResults) => {
-                        if (err) throw err;
+                        // if (err) throw err;
                         res.render('guest-view-cards', { cards: results, sess_obj, currentPage: req.path, stageResults, rarityResults, typeResults, setResults });
                     })
 
@@ -840,17 +840,17 @@ app.post('/delete-account', (req, res) => {
     const deleteCardCollectionQuery = `DELETE FROM card_collection WHERE collection_id = (SELECT collection_id FROM collection WHERE user_id = ?)`;
     // const collectionId = `SELECT collection_id FROM collection WHERE user_id = "${uid}"`;
     db.query(deleteCardCollectionQuery, [uid], (err, result) => {
-        if (err) throw err;
+        // if (err) throw err;
 
         const deleteCollectionQuery = `DELETE FROM collection WHERE user_id = ?`;
         db.query(deleteCollectionQuery, [uid], (err, result) => {
 
-            if (err) throw err;
+            // if (err) throw err;
             const deleteRatingQuery = `DELETE FROM rating WHERE rating_user_id = ?`;
 
             db.query(deleteRatingQuery, [uid], (err, result) => {
 
-                if (err) throw err;
+                // if (err) throw err;
 
                 const deleteAccountQuery = 'DELETE FROM user WHERE user_id = ?';
                 db.query(deleteAccountQuery, [uid], (err, result) => {
@@ -881,21 +881,21 @@ app.get('/guest-view-cards/sort', (req, res) => {
     INNER JOIN rarity r ON r.rarity_id = pc.rarity_id ORDER BY ${sort} ${order}`;
 
     db.query(sortQuery, (err, result) => {
-        if (err) throw err;
+        // if (err) throw err;
 
         const stageQuery = `SELECT * FROM pokemon_stage`;
         db.query(stageQuery, (err, stageResults) => {
-            if (err) throw err;
+            // if (err) throw err;
 
             const rarityQuery = `SELECT * FROM rarity`;
             db.query(rarityQuery, (err, rarityResults) => {
-                if (err) throw err;
+                // if (err) throw err;
                 const typeQuery = `SELECT * FROM pokemon_type`;
                 db.query(typeQuery, (err, typeResults) => {
-                    if (err) throw err;
+                    // if (err) throw err;
                     const setQuery = `SELECT * FROM pokemon_set`;
                     db.query(setQuery, (err, setResults) => {
-                        if (err) throw err;
+                        // if (err) throw err;
                         res.render('guest-view-cards', { cards: result, sess_obj: false, currentPage: req.path, stageResults, rarityResults, typeResults, setResults });
                     });
                 })
@@ -904,11 +904,13 @@ app.get('/guest-view-cards/sort', (req, res) => {
     });
 });
 
-app.get('/guest-view-cards/filter-rarity', (req, res) => {
+app.get('/guest-view-cards/filter', (req, res) => {
     let sess_obj = req.session;
     sess_obj.authen = false;
     const selectedRarities = req.query.rarity;
-    console.log('Selected rarities:', selectedRarities)
+    console.log('Selected rarities:', selectedRarities);
+    const selectedStages = req.query.stage;
+    console.log('Selected stages:', selectedStages);
     let query = `
     SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, 
            ps.pokemon_stage_name, pc.attack, r.rarity_name, pc.weakness, 
@@ -918,38 +920,49 @@ app.get('/guest-view-cards/filter-rarity', (req, res) => {
     INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
     INNER JOIN pokemon_set psn ON psn.pokemon_set_id = pc.pokemon_set_id
     INNER JOIN rarity r ON r.rarity_id = pc.rarity_id`;
-    if (!Array.isArray(selectedRarities)) {
-        console.log('Selected Rarity' , selectedRarities);
-      let rarityFilter=` WHERE r.rarity_name IN ('${selectedRarities}') `;
-      query += rarityFilter;
-      }
-    else if (selectedRarities.length > 1) {
-        let rarityFilter = `  WHERE r.rarity_name IN (`;
-        for (let i = 0; i < selectedRarities.length; i++) {
-          rarityFilter += `'${selectedRarities[i]}'`;
-          if (i < selectedRarities.length -1) {
-            rarityFilter += `, `;
-          }
+   
+    
+    if (selectedRarities && selectedRarities.length > 0) {
+        if (!Array.isArray(selectedRarities)) {
+            query += ` AND r.rarity_name = '${selectedRarities}'`;
+        } else {
+            query += ` AND r.rarity_name = ('${selectedRarities.join("','")}')`;
         }
-        rarityFilter += `)`;
-        query += rarityFilter;
-      }
-      console.log('Generated SQL Query:', query);
+    }
+    
+    if (!Array.isArray(selectedStages)) {
+        console.log('Selected Stage', selectedStages);
+        let stageFilter = ` AND ps.pokemon_stage_name = ('${selectedStages}') `;
+        query += stageFilter;
+    }
+    else if (selectedStages.length > 1) {
+        let  stageFilter = `  AND ps.pokemon_stage_name = (`;
+        for (let i = 0; i < selectedStages.length; i++) {
+            stageFilter += `'${selectedStages[i]}'`;
+            if (i <selectedStages.length - 1) {
+                stageFilter += `, `;
+            }
+        }
+        stageFilter += `)`;
+        query +=  stageFilter;
+    }
+
+    console.log('Generated SQL Query:', query);
     db.query(query, (err, results) => {
-        if (err) throw err;
+        // if (err) throw err;
         const stageQuery = `SELECT * FROM pokemon_stage`;
         db.query(stageQuery, (err, stageResults) => {
-            if (err) throw err;
+            // if (err) throw err;
 
             const rarityQuery = `SELECT * FROM rarity`;
             db.query(rarityQuery, (err, rarityResults) => {
-                if (err) throw err;
+                // if (err) throw err;
                 const typeQuery = `SELECT * FROM pokemon_type`;
                 db.query(typeQuery, (err, typeResults) => {
-                    if (err) throw err;
+                    // if (err) throw err;
                     const setQuery = `SELECT * FROM pokemon_set`;
                     db.query(setQuery, (err, setResults) => {
-                        if (err) throw err;
+                        // if (err) throw err;
                         res.render('guest-view-cards', { cards: results, sess_obj: false, currentPage: req.path, stageResults, rarityResults, typeResults, setResults });
                     });
                 })
