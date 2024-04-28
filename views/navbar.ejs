@@ -22,7 +22,7 @@
 
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
-                        <% if (!sess_obj.authen){ %>
+                        <% if (!sess_obj){ %>
                             <a class="nav-link <%= currentPage === '/guest-access' ? 'active' : '' %>" href="guest-access">Home</a>
                             <a class="nav-link <%= currentPage === '/guest-view-cards' ? 'active' : '' %>" href="guest-view-cards">Browse Cards</a>
                             <a class="nav-link <%= currentPage === '/sign-up' ? 'active' : '' %>" href="sign-up">Create an Account</a>
@@ -39,9 +39,10 @@
 
                 <% } else { %>
                     <a class="nav-link <%= currentPage === '/home' ? 'active' : '' %>" href="home">Home</a>
-                    <a class="nav-link <%= currentPage === '/view-cards' ? 'active' : '' %>" href="view-cards">Browse Cards</a>
+                    <a class="nav-link <%= currentPage === '/guest-view-cards' ? 'active' : '' %>" href="guest-view-cards">Browse Cards</a>
                     <a class="nav-link <%= currentPage === '/other-collections' ? 'active' : '' %>" href="other-collections">Browse Collections</a>
-                    <a class="nav-link <%= currentPage === '/view-collection' ? 'active' : '' %>" href="view-collection">View My Collection</a>
+                    <a class="nav-link <%= currentPage === '/view-my-collections' ? 'active' : '' %>" href="view-my-collections">View My Collections</a>
+                    <a class="nav-link <%= currentPage === '/view-wishlist' ? 'active' : '' %>" href="view-wishlist">View My Wishlist</a>
 
             </div>
             </div>

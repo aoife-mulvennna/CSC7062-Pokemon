@@ -102,7 +102,6 @@
                         <% }); %>
                       </div>
                     </div>
-
                     <button type="submit" class="btn btn-primary">Apply</button>
               </form>
             </div>
@@ -113,11 +112,6 @@
     </div>
 
 
-
-
-
-
-    <hr>
     <% cards.forEach(card=> { %>
       <div class="row">
         <div class="col">
@@ -154,11 +148,27 @@
             </li>
           </ul>
         </div>
+        <% if (!sess_obj){ %>
         <div class="col">
           Create an account to add to your collection!
         </div>
-      </div>
+     </div>
+     <% } else { %>
+      <div class="col">
+       
+        <form action="/add-to-wishlist" method="POST">
+          <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
+          <button type="submit" class="btn btn-secondary mt-3">Add to Wishlist</button>
+    
+        </form>
 
+        <form action="/add-to-collection" method="POST">
+          <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
+          <button type="submit" class="btn btn-primary mt-3">Add to Collection</button>
+    
+        </form>
+      </div>
+      <% } %>
       <hr>
       <% }); %>
 
@@ -282,6 +292,7 @@
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
 </script>
+
 <script>
   var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
   var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {

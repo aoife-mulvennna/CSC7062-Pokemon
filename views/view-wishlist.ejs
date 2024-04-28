@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Collection</title>
+    <title>View Wishlist</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
         integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="/innerstyle.css">
@@ -16,8 +16,9 @@
    <%-include ('navbar') %>
 
     <div class="container mt-5">
-        <h3><%=collectionName%></h3>
-        <h5> Author: <%=username %></h5>
+        <h2>
+            <%=username %>'s wishlist!
+        </h2>
 
         <hr>
 
@@ -25,8 +26,8 @@
             <div class="container mt-3">
                 <div><img class="ml-3 sad" src="sad_eevee.jpeg">
                 </div>
-               <p>Your collection is empty.</p> 
-                <p>Add to your collection by viewing all of the cards!</p>
+               <p>Your wishlist is empty.</p> 
+                <p>Add to your wishlist by viewing all of the cards!</p>
                 <button href="view-cards" class="btn btn-primary mt-3">Browse Cards</button>
                 </div>
         <% } else { %>
@@ -69,8 +70,8 @@
                 </div>
 
                 <div class="col">
-                    <button type="button" class="btn btn-secondary mt-3">Favourite</button></td>
-                    <form action="/remove-from-collection" method="POST">
+
+                    <form action="/remove-from-wishlist" method="POST">
                         <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
                         <button type="submit" class="btn btn-primary mt-3">Remove</button>
                     </form>

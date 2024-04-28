@@ -41,20 +41,17 @@
         </ul>
       </div> -->
       <div class="col">
-        <button type="button" class="btn btn-secondary mt-3">Favourite</button></td>
+       
+        <form action="/add-to-wishlist" method="POST">
+          <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
+          <button type="submit" class="btn btn-secondary mt-3">Add to Wishlist</button>
+    
+        </form>
+
         <form action="/add-to-collection" method="POST">
           <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
           <button type="submit" class="btn btn-primary mt-3">Add to Collection</button>
-    <!-- Hidden toast element -->
-<div class="toast" id="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="3000" style="position: absolute; top: 0; right: 0;">
-  <div class="toast-header">
-    <strong class="mr-auto">Notification</strong>
-    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-      <span aria-hidden="true">&times;</span>
-    </button>
-  </div>
-  <div class="toast-body" id="toast-body"></div>
-</div>
+    
         </form>
       </div>
     </div>
@@ -69,46 +66,5 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-<script>// Function to show toast message
-  function showToast(message, isSuccess) {
-    const toast = $('#toast');
-    const toastBody = $('#toast-body');
-    
-    // Set toast color based on success or error
-    if (isSuccess) {
-      toast.removeClass('bg-danger').addClass('bg-success');
-    } else {
-      toast.removeClass('bg-success').addClass('bg-danger');
-    }
-    
-    // Set toast message
-    toastBody.text(message);
-    
-    // Show toast
-    toast.toast('show');
-  }
-  
-  // Ajax request for form submission
-  $(document).ready(function() {
-    $('form').submit(function(event) {
-      event.preventDefault(); // Prevent default form submission
-      
-      $.ajax({
-        type: 'POST',
-        url: $(this).attr('action'),
-        data: $(this).serialize(),
-        success: function(response) {
-          // Show success toast
-          showToast(response.message, true);
-          // Optionally, redirect to another page
-          window.location.href = response.redirectUrl;
-        },
-        error: function(xhr, status, error) {
-          // Show error toast
-          showToast(xhr.responseText, false);
-        }
-      });
-    });
-  });
-  </script>
+
 </html>
