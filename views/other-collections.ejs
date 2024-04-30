@@ -13,45 +13,49 @@
 
 <body>
 
-<%-include ('navbar')%>
+    <%-include ('navbar')%>
 
-    <div class="container mt-5">
-        <h1>All Collections</h1>
-
-        <hr>
-        <% collections.forEach(collection=> { %>
-            <div class="row">
-                <div class="col">
-                    <img src="<%= collection.profile_picture_url %>" class="display-profile-pic">
-                <strong><%= collection.username %></strong>'s collection
-                </div>
-                <div class="col">
-                    <ul class="list-unstyled">
-    
-                        <li>Contains <%= collection.num_cards %> cards </li>
-    
-                    </ul>
-                </div>
-                <div class="col">
-                    <form action="/view-card-in-collection" method="GET">
-                        <input type="hidden" name="collection_id" value="<%= collection.collection_id %>">
-                        <button type="submit" class="btn btn-primary mt-3">View Collection</button>
-                      </form>
-                </div>
-                <div class="col">
-                    Average rating: <%=collection.average_rating || 'Not rated yet'%>
-                </div>
-            </div>
-           
-
+        <div class="container mt-5">
+            <h1>All Collections</h1>
 
             <hr>
-            <% }); %>
+            <% collections.forEach(collection=> { %>
+                <div class="row">
+                    <div class="col">
+                        <img src="<%= collection.profile_picture_url %>" class="display-profile-pic">
+                        <div>
+                            <%=collection.collection_name%>
+                                by <strong>
+                                    <%= collection.username %>
+                                </strong>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <ul class="list-unstyled">
+                            <li>Contains <%= collection.num_cards %> cards </li>
+                        </ul>
+                    </div>
+                 
+                    <div class="col">
+                        Average rating: <%=collection.average_rating || 'Not rated yet' %>
+                    </div>
+                    <div class="col">
+                        <form action="/view-card-in-collection" method="GET">
+                            <input type="hidden" name="collection_id" value="<%= collection.collection_id %>">
+                            <button type="submit" class="btn btn-primary mt-3">View Collection</button>
+                        </form>
+                    </div>
+                </div>
 
 
-    </div>
 
-    <%-include ('footer')%>
+                <hr>
+                <% }); %>
+
+
+        </div>
+
+        <%-include ('footer')%>
 </body>
 
 </html>

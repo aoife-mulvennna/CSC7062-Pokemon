@@ -12,88 +12,89 @@
 </head>
 
 <body>
-<%-include ('navbar')%>
+    <%-include ('navbar')%>
+        <div class="container mt-5">
+            <h2>
+                <img src="<%=ownerPic%>" class="display-profile-pic">
+                <%=ownerUsername %>'s collection!
+            </h2>
+            <form action="/delete-collection" method="POST">
+                <input type="hidden" name="collectionId" value="<%= collectionId %>">
+                <button type="submit" class="btn btn-danger mb-3">Delete Collection</button>
+            </form>
 
-
-
-    <div class="container mt-5">
-        <h2>
-            <img src="<%=ownerPic%>" class="display-profile-pic">
-            <%=ownerUsername %>'s collection!
-
-        </h2>
-
-        <form action="/ratings" method="POST">
-            <input type="hidden" name="collectionId" value="<%= collectionId %>">
-            <label for="rating">Rate this collection:</label>
-            <select name="ratingValue" id="rating">
-                <option value="1">1 star</option>
-                <option value="2">2 stars</option>
-                <option value="3">3 stars</option>
-                <option value="4">4 stars</option>
-                <option value="5">5 stars</option>
-            </select>
-            <button type="submit">Submit Rating</button>
-        </form>
-        <!-- Display the current rating value -->
-        <p>Your current rating: <%= userRating || 'Not rated yet' %> stars
-        </p>
-
-        
-
-        <hr>
-        <% cards.forEach(card=> { %>
-            <div class="row">
-                <div class="col">
-                    <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="210">
-                </div>
-                <div class="col">
-                    <ul class="list-unstyled card-details">
-                        <li><strong class="title">Name: </strong>
-                            <%= card.pokemon_name %>
-                        </li>
-                        <li><strong class="title">Type: </strong>
-                            <%= card.pokemon_type_name %>
-                        </li>
-                        <li><strong class="title">Hp: </strong>
-                            <%= card.hp %>
-                        </li>
-                        <li><strong class="title">Stage: </strong>
-                            <%= card.pokemon_stage_name %>
-                        </li>
-                        <li><strong class="title">Attack: </strong>
-                            <%= card.attack %>
-                        </li>
-                        <li><strong class="title">Rarity: </strong>
-                            <%= card.rarity_name %>
-                        </li>
-                        <li><strong class="title">Weakness: </strong>
-                            <%= card.weakness %>
-                        </li>
-                        <li><strong class="title">Set: </strong>
-                            <%= card.pokemon_set_name %>
-                        </li>
-                        <li><strong class="title">Evolves from: </strong>
-                            <%= card.evolve_from || 'None' %>
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="col">
-                    <button type="button" class="btn btn-secondary mt-3">Favourite</button></td>
-                </div>
-            </div>
+            <form action="/ratings" method="POST">
+                <input type="hidden" name="collectionId" value="<%= collectionId %>">
+                <label for="rating">Rate this collection:</label>
+                <select name="ratingValue" id="rating">
+                    <option value="1">1 star</option>
+                    <option value="2">2 stars</option>
+                    <option value="3">3 stars</option>
+                    <option value="4">4 stars</option>
+                    <option value="5">5 stars</option>
+                </select>
+                <button type="submit">Submit Rating</button>
+            </form>
+            <!-- Display the current rating value -->
+            <p>Your current rating: <%= userRating || 'Not rated yet' %> stars
+            </p>
 
             <hr>
-            <% }); %>
+            <% if (cardCollectionResults.length===0){ %>
+                <p>This collection is empty.</p>
+                <% } else { %>
 
+                    <% cards.forEach(card=> { %>
+                        <div class="row">
+                            <div class="col">
+                                <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="210">
+                            </div>
+                            <div class="col">
+                                <ul class="list-unstyled card-details">
+                                    <li><strong class="title">Name: </strong>
+                                        <%= card.pokemon_name %>
+                                    </li>
+                                    <li><strong class="title">Type: </strong>
+                                        <%= card.pokemon_type_name %>
+                                    </li>
+                                    <li><strong class="title">Hp: </strong>
+                                        <%= card.hp %>
+                                    </li>
+                                    <li><strong class="title">Stage: </strong>
+                                        <%= card.pokemon_stage_name %>
+                                    </li>
+                                    <li><strong class="title">Attack: </strong>
+                                        <%= card.attack %>
+                                    </li>
+                                    <li><strong class="title">Rarity: </strong>
+                                        <%= card.rarity_name %>
+                                    </li>
+                                    <li><strong class="title">Weakness: </strong>
+                                        <%= card.weakness %>
+                                    </li>
+                                    <li><strong class="title">Set: </strong>
+                                        <%= card.pokemon_set_name %>
+                                    </li>
+                                    <li><strong class="title">Evolves from: </strong>
+                                        <%= card.evolve_from || 'None' %>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col">
+                                <button type="button" class="btn btn-secondary mt-3">Favourite</button></td>
+                            </div>
+                        </div>
+                        <hr>
+                        <% }); %>
+                            <%}%>
 
-    </div>
+        </div>
 
-<script>
-    const ratings = document.getElementById('rating1'); const rating1 = new CDB.Rating(ratings);
-    rating1.getRating;
-</script>
-<%-include ('footer')%>
+        <script>
+            const ratings = document.getElementById('rating1'); const rating1 = new CDB.Rating(ratings);
+            rating1.getRating;
+        </script>
+        <%-include ('footer')%>
 </body>
+
 </html>

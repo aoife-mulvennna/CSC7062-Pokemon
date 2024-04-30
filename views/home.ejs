@@ -13,28 +13,116 @@
 
 <body>
 
-<%- include ('navbar') %>
-    <h2> Hello <%=userdata.username %>, welcome! </h2>
-
-
-        <p>
-
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean quis mi egestas, posuere tortor sit amet,
-            semper
-            erat. Nunc faucibus, diam sed cursus maximus, ligula ex vestibulum est, ac cursus mauris quam sit amet
-            augue.
-            Sed blandit, lacus et vestibulum imperdiet, purus lectus tristique mi, porta tempus erat ipsum mattis
-            tellus.
-            Vivamus semper nibh sit amet velit tempus, eget efficitur erat tempus. Donec dapibus tempus tellus ac
-            tempus.
-            Maecenas ultricies accumsan felis quis placerat. Ut vestibulum dictum tortor sed facilisis. Aliquam
-            suscipit,
-            sapien in egestas tincidunt, sapien ligula convallis ex, vel porttitor eros arcu nec nisl.
-        </p>
-
-
-
-        <%-include ('footer')%>
+    <%- include ('navbar') %>
+        <div class="container mt-5">
+            <h2> Hello <%=userdata.username %>, welcome! </h2>
+            <hr>
+            <div class="row">
+                <div class="col">
+                    <div class="card m-3">
+                        <div class="card-header">
+                            More information
+                        </div>
+                        <div class="card-body">
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                        </div>
+                    </div>
+                    <div class="card m-3">
+                        <div class="card-header">
+                            More information
+                        </div>
+                        <div class="card-body">
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col">
+                    <div class="card m-3">
+                        <div class="card-header">
+                            Card of the Day
+                        </div>
+                        <div class="card-body">
+                            <% if (cardOfTheDay) { %>
+                            <h5 class="card-title">
+                                <%= cardOfTheDay.pokemon_name %>
+                            </h5>
+                            <img src="<%= cardOfTheDay.url_img %>" class="card-img-top" alt="<%= cardOfTheDay.pokemon_name %>">
+                            <!-- Add other card details here -->
+                            <% } else { %>
+                            <p>No card of the day available.</p>
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="card m-3">
+                        <div class="card-header">
+                            More information
+                        </div>
+                        <div class="card-body">
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col">
+                    <div class="card m-3">
+                        <div class="card-header">
+                            More information
+                        </div>
+                        <div class="card-body">
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                        </div>
+                    </div>
+                    <div class="card m-3">
+                        <div class="card-header">
+                            More information
+                        </div>
+                        <div class="card-body">
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                            Still more information
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+                <%-include ('footer')%>
 </body>
 
 </html>
