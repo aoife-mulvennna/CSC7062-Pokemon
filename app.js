@@ -340,16 +340,10 @@ app.post('/sign-up', (req, res) => {
                 res.send("An error occured while creating the account.");
                 return;
             }
-            // Create an empty collection for the new user so that they can add cards
-            const userId = result.insertId; // Get the ID of user
 
-            // const createCollectionQuery = `INSERT INTO collection (user_id) VALUES (?)`;
-            // db.query(createCollectionQuery, [userId], (err, result) => {
-            //     if (err) {
-            //         console.error("Error creating collection:", err);
-            //         res.send("An error occurred while creating the account.");
-            //     }
-            // creating empty wishlist as all logged in users will automatically have a wishlist
+            const userId = result.insertId; 
+
+          
             const createWishlistQuery = `INSERT INTO wishlist (user_id) VALUES (?)`;
             db.query(createWishlistQuery, [userId], (err, result) => {
                 if (err) {
@@ -437,23 +431,8 @@ app.post('/add-to-collection', getUserIdFromSession, (req, res) => {
     // const uid = sess_obj.authen;
     const uid = req.userId;
     const cardID = req.body.card_id;
-
-    const collection_query = `SELECT collection_id FROM collection WHERE user_id = ?`;
-
-    db.query(collection_query, [uid], (err, results) => {
-        if (err) {
-            console.error('Error retrieving collection ID:', err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-
-        if (results.length === 0) {
-            console.error('No collection found for user');
-            res.status(404).send('No collection found for user');
-            return;
-        }
-        const collectionID = results[0].collection_id;
-
+    const collectionID = req.body.collection_id;
+    console.log('collection id', collectionID);
         const insertQuery = `INSERT INTO card_collection (collection_id, card_id) VALUES (?,?)`;
 
         db.query(insertQuery, [collectionID, cardID], (err, result) => {
@@ -473,7 +452,6 @@ app.post('/add-to-collection', getUserIdFromSession, (req, res) => {
             }
         });
 
-    });
 });
 
 
@@ -579,7 +557,7 @@ app.get('/view-card-in-collection', (req, res) => {
             const username = usernameResult[0].username;
             const picUrl = usernameResult[0].profile_picture_url;
 // check if the logged in user owns the collection
-            const checkOwnershipQuery = `SELECT u.user_id, pp.profile_picture_url, u.username FROM collection INNER JOIN user u ON u.user_id = collection.user_id INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id WHERE collection_id = ?`;
+            const checkOwnershipQuery = `SELECT u.user_id, pp.profile_picture_url, u.username, c.collection_name FROM collection c INNER JOIN user u ON u.user_id = c.user_id INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id WHERE collection_id = ?`;
             db.query(checkOwnershipQuery, [collectionId], (err, ownershipResult) => {
                 if (err) {
                     console.error("Error checking ownership:", err);
@@ -589,8 +567,6 @@ app.get('/view-card-in-collection', (req, res) => {
 // gets value to see if they are the owner. this info is passed on to the view-card-in-collection page to vary the buttons that are shown on that page. 
                 const isOwner = ownershipResult.length > 0 && ownershipResult[0].user_id === userId;
               // gets the id of the owner of the collection
-                const ownerId = ownershipResult[0].user_id;
-
 // check if there are cards in the collection. 
                 const checkCardsQuery = `SELECT * FROM card_collection WHERE collection_id = ?`;
                 db.query(checkCardsQuery, [collectionId], (err, cardCollectionResults) => {
@@ -606,7 +582,7 @@ app.get('/view-card-in-collection', (req, res) => {
                             logoPath: 'Pokemon_Logo.png',
                             username: username, ownerPic: ownershipResult[0].profile_picture_url, ownerUsername: ownershipResult[0].username,
                          isOwner, collectionId: collectionId, userRating: userRating, sess_obj, userdata: userData, currentPage: req.path
-                            , cardCollectionResults
+                            , cardCollectionResults, collectionName: ownershipResult[0].collection_name
                         });
                     } else {
                         const query = `
@@ -631,8 +607,8 @@ app.get('/view-card-in-collection', (req, res) => {
                             }
                             res.render('view-card-in-collection', {
                                 cards: collectionResults, logoPath: 'Pokemon_Logo.png',
-                                username: username, picUrl: picUrl, ownerUsername: ownerUsername, ownerPic: ownerPic, collectionId: collectionId, userRating: userRating, sess_obj, userdata: userData, currentPage: req.path
-                                , cardCollectionResults, isOwner: isOwner,
+                                username: username, picUrl: picUrl, ownerPic: ownershipResult[0].profile_picture_url, ownerUsername: ownershipResult[0].username, collectionId: collectionId, userRating: userRating, sess_obj, userdata: userData, currentPage: req.path
+                                , cardCollectionResults, isOwner: isOwner, collectionName: ownershipResult[0].collection_name
                             });
                         });
 
@@ -880,7 +856,7 @@ app.get('/guest-view-cards', (req, res) => {
                                 }
                                 const userData = userResults[0];
                                 username = userData.username;
-                                const collectionNameQuery = `SELECT * FROM collection WHERE user_id = ?`;
+                                const collectionNameQuery = `SELECT collection.collection_id, collection.collection_name FROM collection WHERE user_id = ?`;
                                 db.query(collectionNameQuery, [uid], (err, collectionNameResults) => {
                                     // if (err) throw err;
                                     res.render('guest-view-cards', { cards: results, sess_obj: true, userdata: userData, currentPage: req.path, stageResults, rarityResults, typeResults, setResults, collectionNameResults });
@@ -1000,7 +976,7 @@ app.post('/add-to-wishlist', getUserIdFromSession, (req, res) => {
                 }
             } else {
                 console.log("successfully added to wishlist");
-                res.status(200).json({ message: 'Card added to your wishlist successfully', redirectUrl: '/guest-view-cards' });
+                // res.status(200).json({ message: 'Card added to your wishlist successfully', redirectUrl: '/guest-view-cards' });
 
                 // res.redirect('/view-cards');
             }
@@ -1096,6 +1072,6 @@ app.get('/view-my-collections', (req, res) => {
     });
 });
 
-app.listen(3001, () => {
-    console.log('Server on port 3001');
+app.listen(3000, () => {
+    console.log('Server on port 3000');
 });

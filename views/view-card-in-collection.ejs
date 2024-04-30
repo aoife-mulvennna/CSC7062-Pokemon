@@ -16,12 +16,12 @@
         <div class="container mt-5">
             <h2>
                 <img src="<%=ownerPic%>" class="display-profile-pic">
-                <%=ownerUsername %>'s collection!
+                <p>
+                <p>
+                    <%=collectionName%> by <%=ownerUsername%>
+                </p>
             </h2>
-            <form action="/delete-collection" method="POST">
-                <input type="hidden" name="collectionId" value="<%= collectionId %>">
-                <button type="submit" class="btn btn-danger mb-3">Delete Collection</button>
-            </form>
+
 
             <form action="/ratings" method="POST">
                 <input type="hidden" name="collectionId" value="<%= collectionId %>">
@@ -39,54 +39,75 @@
             <p>Your current rating: <%= userRating || 'Not rated yet' %> stars
             </p>
 
-            <hr>
-            <% if (cardCollectionResults.length===0){ %>
-                <p>This collection is empty.</p>
-                <% } else { %>
+            <% if (isOwner) { %>
+                <div class="col">
+                    <form action="/delete-collection" method="POST">
+                        <input type="hidden" name="collectionId" value="<%= collectionId %>">
+                        <button type="submit" class="btn btn-danger mb-3">Delete Collection</button>
+                    </form>
+                </div>
+                <%}%>
+                    <hr>
+                    <% if (cardCollectionResults.length===0){ %>
+                        <p>This collection is empty.</p>
 
-                    <% cards.forEach(card=> { %>
-                        <div class="row">
-                            <div class="col">
-                                <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="210">
-                            </div>
-                            <div class="col">
-                                <ul class="list-unstyled card-details">
-                                    <li><strong class="title">Name: </strong>
-                                        <%= card.pokemon_name %>
-                                    </li>
-                                    <li><strong class="title">Type: </strong>
-                                        <%= card.pokemon_type_name %>
-                                    </li>
-                                    <li><strong class="title">Hp: </strong>
-                                        <%= card.hp %>
-                                    </li>
-                                    <li><strong class="title">Stage: </strong>
-                                        <%= card.pokemon_stage_name %>
-                                    </li>
-                                    <li><strong class="title">Attack: </strong>
-                                        <%= card.attack %>
-                                    </li>
-                                    <li><strong class="title">Rarity: </strong>
-                                        <%= card.rarity_name %>
-                                    </li>
-                                    <li><strong class="title">Weakness: </strong>
-                                        <%= card.weakness %>
-                                    </li>
-                                    <li><strong class="title">Set: </strong>
-                                        <%= card.pokemon_set_name %>
-                                    </li>
-                                    <li><strong class="title">Evolves from: </strong>
-                                        <%= card.evolve_from || 'None' %>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="col">
-                                <button type="button" class="btn btn-secondary mt-3">Favourite</button></td>
-                            </div>
-                        </div>
-                        <hr>
-                        <% }); %>
-                            <%}%>
+                        <% } else { %>
+
+                            <% cards.forEach(card=> { %>
+                                <div class="row">
+                                    <div class="col">
+                                        <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="210">
+                                    </div>
+                                    <div class="col">
+                                        <ul class="list-unstyled card-details">
+                                            <li><strong class="title">Name: </strong>
+                                                <%= card.pokemon_name %>
+                                            </li>
+                                            <li><strong class="title">Type: </strong>
+                                                <%= card.pokemon_type_name %>
+                                            </li>
+                                            <li><strong class="title">Hp: </strong>
+                                                <%= card.hp %>
+                                            </li>
+                                            <li><strong class="title">Stage: </strong>
+                                                <%= card.pokemon_stage_name %>
+                                            </li>
+                                            <li><strong class="title">Attack: </strong>
+                                                <%= card.attack %>
+                                            </li>
+                                            <li><strong class="title">Rarity: </strong>
+                                                <%= card.rarity_name %>
+                                            </li>
+                                            <li><strong class="title">Weakness: </strong>
+                                                <%= card.weakness %>
+                                            </li>
+                                            <li><strong class="title">Set: </strong>
+                                                <%= card.pokemon_set_name %>
+                                            </li>
+                                            <li><strong class="title">Evolves from: </strong>
+                                                <%= card.evolve_from || 'None' %>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <% if (!isOwner) { %>
+                                        <div class="col">
+                                            <form action="/add-to-wishlist" method="POST">
+                                                <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
+                                                <button type="submit" class="btn btn-secondary mt-3">Add to wishlist</button>
+                                            </form>
+                                        </div>
+                                        <%} else {%>
+                                            <div class="col">
+                                                <button type="button" class="btn btn-secondary mt-3">Remove from
+                                                    Collection</button></td>
+                                            </div>
+                                            <%}%>
+
+                                </div>
+                                <hr>
+                                <% }); %>
+                                    <% } %>
+                                     
 
         </div>
 

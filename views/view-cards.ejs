@@ -15,7 +15,7 @@
   <%-include ('navbar')%>
 
   <div class="container mt-5">
-    <h2>All Cards</h2>
+    <h3>All Cards</h3>
     <hr>
     <% cards.forEach(card=> { %>
     <div class="row">
@@ -35,11 +35,6 @@
           <li><strong class="title">Evolves from:  </strong> <%= card.evolve_from || 'None' %></li>
         </ul>
       </div>
-      <!-- <div class="col">
-        <ul class="list-unstyled card-details">
-         
-        </ul>
-      </div> -->
       <div class="col">
        
         <form action="/add-to-wishlist" method="POST">
