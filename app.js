@@ -37,16 +37,6 @@ const db = mysql.createConnection({
     port: '8889'
 });
 
-function isAuthenticated(req, res, next) {
-    if (req.user) {
-        // User is authenticated, proceed with the request
-        return next();
-    } else {
-        // User is not authenticated, redirect to guest access page
-        res.redirect('/guest-access');
-    }
-}
-
 const getUserIdFromSession = (req, res, next) => {
     let sess_obj = req.session;
     req.userId = sess_obj.authen; // Assuming the user ID is stored in sess_obj.authen
@@ -426,74 +416,10 @@ app.post('/update-profile-picture', (req, res) => {
     });
 });
 
-app.post('/add-to-collection', getUserIdFromSession, (req, res) => {
-    // let sess_obj = req.session;
-    // const uid = sess_obj.authen;
-    const uid = req.userId;
-    const cardID = req.body.card_id;
-    const collectionID = req.body.collection_id;
-    console.log('collection id', collectionID);
-    const insertQuery = `INSERT INTO card_collection (collection_id, card_id) VALUES (?,?)`;
-
-    db.query(insertQuery, [collectionID, cardID], (err, result) => {
-        if (err) {
-            if (err.code === 'ER_DUP_ENTRY') { // Handle duplicate entry error
-                // res.status(400).send('This card is already in your collection');
-                res.status(400).json({ message: 'This card is already in your collection' });
-            } else {
-                console.error("Error adding to collection:", err);
-                res.status(500).send('Internal Server Error');
-            }
-        } else {
-            console.log("successfully added to collection");
-            res.status(200).json({ message: 'Card added to your collection successfully', redirectUrl: '/view-cards' });
-
-            // res.redirect('/view-cards');
-        }
-    });
-
-});
-
-app.post('/remove-from-collection', (req, res) => {
-    let sess_obj = req.session;
-    const userId = sess_obj.authen;
-    const cardId = req.body.card_id;
-    const collectionName = req.body.collection_name;
-    const collectionId = req.body.collection_id; 
-    console.log('name of collection:', collectionName);
-    console.log('collectionId:', collectionId);
-    // const getCollectionIdQuery = `SELECT collection_id FROM collection WHERE user_id = ? AND collection_name = ?`;
-
-    // db.query(getCollectionIdQuery, [userId, collectionName], (err, collectionResults) => {
-    //     if (err) {
-    //         console.error("Error getting collection ID:", err);
-    //         res.status(500).send('Internal Server Error');
-    //         return;
-    //     }
-
-    //     if (collectionResults.length === 0) {
-    //         console.error("Collection not found for the user:", userId);
-    //         res.status(404).send('Collection not found for the user');
-    //         return;
-    //     }
-
-    //     const collectionId = collectionResults[0].collection_id;
-
-        const deleteQuery = `DELETE FROM card_collection WHERE collection_id = ? AND card_id = ?`;
-        db.query(deleteQuery, [collectionId, cardId], (err, result) => {
-            if (err) {
-                console.error("Error removing card from collection:", err);
-                res.status(500).send('Internal Server Error');
-            } else {
-                console.log('card removed from collection successfully');
-                res.redirect('view-card-in-collection');
-            }
-        });
-    });
-// });
 
 app.get('/other-collections', (req, res) => {
     let sess_obj = req.session;
+    console.log(sess_obj)
     const userId = sess_obj.authen;
     const query = `SELECT u.*, c.collection_id, c.collection_name, pp.profile_picture_url,  COUNT(cc.card_id) AS num_cards, ROUND(AVG(r.rating_value),1) AS average_rating FROM  user u 
     INNER JOIN  collection c ON u.user_id = c.user_id
@@ -502,7 +428,7 @@ app.get('/other-collections', (req, res) => {
     LEFT JOIN rating r ON r.collection_id = c.collection_id
     GROUP BY 
         c.collection_id`;
-    const getUsername = `SELECT * FROM user INNER JOIN profile_picture pp ON pp.profile_picture_id = user.profile_picture_id WHERE user_id = ?`;
+    const getUsername = `SELECT user.username, pp.profile_picture_url FROM user INNER JOIN profile_picture pp ON pp.profile_picture_id = user.profile_picture_id WHERE user_id = ?`;
 
     db.query(query, (err, results) => {
         if (err) {
@@ -534,12 +460,6 @@ app.get('/guest-access', (req, res) => {
     sess_obj.authen = false;
     res.render('guest-access', { logoPath: 'Pokemon_Logo.png', ballPath: 'Poke_Ball.webp', sess_obj: false, currentPage: req.path });
 });
-
-// Example route accessible to authenticated users only
-app.get('/restricted-route', isAuthenticated, (req, res) => {
-    res.send('This is a restricted route for authenticated users only.');
-});
-
 
 app.get('/view-card-in-collection', (req, res) => {
     let sess_obj = req.session;
@@ -631,6 +551,60 @@ app.get('/view-card-in-collection', (req, res) => {
                 });
             });
         });
+    });
+});
+
+
+app.post('/add-to-collection', getUserIdFromSession, (req, res) => {
+    // let sess_obj = req.session;
+    // const uid = sess_obj.authen;
+    const uid = req.userId;
+    const cardID = req.body.card_id;
+    const collectionID = req.body.collection_id;
+    console.log('collection id', collectionID);
+    const insertQuery = `INSERT INTO card_collection (collection_id, card_id) VALUES (?,?)`;
+
+    db.query(insertQuery, [collectionID, cardID], (err, result) => {
+        if (err) {
+            if (err.code === 'ER_DUP_ENTRY') { // Handle duplicate entry error
+                // res.status(400).send('This card is already in your collection');
+                res.status(400).json({ message: 'This card is already in your collection' });
+            } else {
+                console.error("Error adding to collection:", err);
+                res.status(500).send('Internal Server Error');
+            }
+        } else {
+            console.log("successfully added to collection");
+            // res.status(200).json({ message: 'Card added to your collection successfully', redirectUrl: '/view-cards' });
+            res.redirect(req.get('referer'));
+        }
+    });
+
+});
+
+app.post('/remove-from-collection', (req, res) => {
+    let sess_obj = req.session;
+    const userId = sess_obj.authen;
+    const cardId = req.body.card_id;
+    const collectionName = req.body.collection_name;
+    const collectionId = req.body.collection_id;
+    console.log('name of collection:', collectionName);
+    console.log('collectionId:', collectionId);
+    if (!userId || !collectionId) {
+        console.error("User ID or Collection ID is undefined");
+        res.status(400).send('Bad Request');
+        return;
+    }
+    const deleteQuery = `DELETE FROM card_collection WHERE collection_id = ? AND card_id = ?`;
+    db.query(deleteQuery, [collectionId, cardId], (err, result) => {
+        if (err) {
+            console.error("Error removing card from collection:", err);
+            res.status(500).send('Internal Server Error');
+        } else {
+            console.log(sess_obj)
+            console.log('card removed from collection successfully');
+            res.redirect(req.get('referer'));
+        }
     });
 });
 
@@ -907,7 +881,9 @@ app.post('/create-collection', (req, res) => {
             res.status(500).send('An error occurred while creating the collection.');
         } else {
             // Collection successfully created
-            res.redirect('/view-my-collections'); // Redirect to the collections page
+            // res.redirect('/view-my-collections'); 
+            console.log('new collection created successfully');
+            res.redirect(req.get('referer'));
         }
     });
 });
@@ -991,9 +967,8 @@ app.post('/add-to-wishlist', getUserIdFromSession, (req, res) => {
                 }
             } else {
                 console.log("successfully added to wishlist");
-                // res.status(200).json({ message: 'Card added to your wishlist successfully', redirectUrl: '/guest-view-cards' });
-
-                // res.redirect('/view-cards');
+               res.redirect(req.get('referer'));
+               
             }
         });
 
@@ -1014,7 +989,8 @@ app.post('/remove-from-wishlist', (req, res) => {
             console.error("Error removing card from wishlist:", err);
             res.status(500).send('Internal Server Error');
         } else {
-            res.redirect('/view-wishlist');
+            console.log('successfully removed from wishlist');
+            res.redirect(req.get('referer'));
         }
     });
 });
@@ -1022,28 +998,28 @@ app.post('/remove-from-wishlist', (req, res) => {
 app.post('/delete-collection', (req, res) => {
     const collectionId = req.body.collectionId;
 
-    // Query to delete collection from the 'collection' table
-    const deleteCollectionQuery = `DELETE FROM collection WHERE collection_id = ?`;
-
     // Query to delete associated items from the 'card_collection' table
     const deleteCardCollectionQuery = `DELETE FROM card_collection WHERE collection_id = ?`;
 
-    db.query(deleteCollectionQuery, [collectionId], (err, collectionDeleteResult) => {
+
+    // Query to delete collection from the 'collection' table
+    const deleteCollectionQuery = `DELETE FROM collection WHERE collection_id = ?`;
+
+    db.query(deleteCardCollectionQuery, [collectionId], (err, cardCollectionDeleteResult) => {
         if (err) {
-            console.error("Error deleting collection:", err);
+            console.error("Error deleting card collection items:", err);
             res.status(500).send('Internal Server Error');
             return;
         }
-
-        db.query(deleteCardCollectionQuery, [collectionId], (err, cardCollectionDeleteResult) => {
+        db.query(deleteCollectionQuery, [collectionId], (err, collectionDeleteResult) => {
             if (err) {
-                console.error("Error deleting card collection items:", err);
+                console.error("Error deleting collection:", err);
                 res.status(500).send('Internal Server Error');
                 return;
             }
 
-            // Redirect to a success page or render a success message
-            res.redirect('/collection-deleted');
+            console.log('collection deleted successfully');
+            res.redirect(req.get('referer'));
         });
     });
 });
