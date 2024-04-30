@@ -341,9 +341,9 @@ app.post('/sign-up', (req, res) => {
                 return;
             }
 
-            const userId = result.insertId; 
+            const userId = result.insertId;
 
-          
+
             const createWishlistQuery = `INSERT INTO wishlist (user_id) VALUES (?)`;
             db.query(createWishlistQuery, [userId], (err, result) => {
                 if (err) {
@@ -433,49 +433,64 @@ app.post('/add-to-collection', getUserIdFromSession, (req, res) => {
     const cardID = req.body.card_id;
     const collectionID = req.body.collection_id;
     console.log('collection id', collectionID);
-        const insertQuery = `INSERT INTO card_collection (collection_id, card_id) VALUES (?,?)`;
+    const insertQuery = `INSERT INTO card_collection (collection_id, card_id) VALUES (?,?)`;
 
-        db.query(insertQuery, [collectionID, cardID], (err, result) => {
-            if (err) {
-                if (err.code === 'ER_DUP_ENTRY') { // Handle duplicate entry error
-                    // res.status(400).send('This card is already in your collection');
-                    res.status(400).json({ message: 'This card is already in your collection' });
-                } else {
-                    console.error("Error adding to collection:", err);
-                    res.status(500).send('Internal Server Error');
-                }
+    db.query(insertQuery, [collectionID, cardID], (err, result) => {
+        if (err) {
+            if (err.code === 'ER_DUP_ENTRY') { // Handle duplicate entry error
+                // res.status(400).send('This card is already in your collection');
+                res.status(400).json({ message: 'This card is already in your collection' });
             } else {
-                console.log("successfully added to collection");
-                res.status(200).json({ message: 'Card added to your collection successfully', redirectUrl: '/view-cards' });
-
-                // res.redirect('/view-cards');
+                console.error("Error adding to collection:", err);
+                res.status(500).send('Internal Server Error');
             }
-        });
+        } else {
+            console.log("successfully added to collection");
+            res.status(200).json({ message: 'Card added to your collection successfully', redirectUrl: '/view-cards' });
+
+            // res.redirect('/view-cards');
+        }
+    });
 
 });
-
-
-
 
 app.post('/remove-from-collection', (req, res) => {
     let sess_obj = req.session;
     const userId = sess_obj.authen;
     const cardId = req.body.card_id;
-    // Query to get the name of the Pokémon being removed
-    const getPokemonNameQuery = `SELECT pokemon_name FROM pokemon_card WHERE pokemon_card_id = ?`;
+    const collectionName = req.body.collection_name;
+    const collectionId = req.body.collection_id; 
+    console.log('name of collection:', collectionName);
+    console.log('collectionId:', collectionId);
+    // const getCollectionIdQuery = `SELECT collection_id FROM collection WHERE user_id = ? AND collection_name = ?`;
 
-    const deleteQuery = `DELETE FROM card_collection WHERE collection_id IN (SELECT collection_id FROM collection WHERE user_id = ?) AND card_id = ?`;
+    // db.query(getCollectionIdQuery, [userId, collectionName], (err, collectionResults) => {
+    //     if (err) {
+    //         console.error("Error getting collection ID:", err);
+    //         res.status(500).send('Internal Server Error');
+    //         return;
+    //     }
 
-    db.query(deleteQuery, [userId, cardId], (err, result) => {
-        if (err) {
-            console.error("Error removing card from collection:", err);
-            res.status(500).send('Internal Server Error');
-        } else {
-            res.redirect('/view-collection');
-        }
+    //     if (collectionResults.length === 0) {
+    //         console.error("Collection not found for the user:", userId);
+    //         res.status(404).send('Collection not found for the user');
+    //         return;
+    //     }
+
+    //     const collectionId = collectionResults[0].collection_id;
+
+        const deleteQuery = `DELETE FROM card_collection WHERE collection_id = ? AND card_id = ?`;
+        db.query(deleteQuery, [collectionId, cardId], (err, result) => {
+            if (err) {
+                console.error("Error removing card from collection:", err);
+                res.status(500).send('Internal Server Error');
+            } else {
+                console.log('card removed from collection successfully');
+                res.redirect('view-card-in-collection');
+            }
+        });
     });
-
-});
+// });
 
 app.get('/other-collections', (req, res) => {
     let sess_obj = req.session;
@@ -542,10 +557,10 @@ app.get('/view-card-in-collection', (req, res) => {
             console.error("Username not found for user ID:", userId);
             res.status(404).send('Username not found');
             return;
-        }    
-    // need to get the logged in users rating of that collection 
-    const getRatingQuery = `SELECT rating_value FROM rating WHERE rating_user_id = ? AND collection_id = ?`;
-    console.log('collection id:', collectionId);
+        }
+        // need to get the logged in users rating of that collection 
+        const getRatingQuery = `SELECT rating_value FROM rating WHERE rating_user_id = ? AND collection_id = ?`;
+        console.log('collection id:', collectionId);
         db.query(getRatingQuery, [userId, collectionId], (err, ratingResult) => {
             if (err) {
                 console.error("Error fetching user's rating:", err);
@@ -556,7 +571,7 @@ app.get('/view-card-in-collection', (req, res) => {
             const userRating = ratingResult.length > 0 ? ratingResult[0].rating_value : null;
             const username = usernameResult[0].username;
             const picUrl = usernameResult[0].profile_picture_url;
-// check if the logged in user owns the collection
+            // check if the logged in user owns the collection
             const checkOwnershipQuery = `SELECT u.user_id, pp.profile_picture_url, u.username, c.collection_name FROM collection c INNER JOIN user u ON u.user_id = c.user_id INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id WHERE collection_id = ?`;
             db.query(checkOwnershipQuery, [collectionId], (err, ownershipResult) => {
                 if (err) {
@@ -564,10 +579,10 @@ app.get('/view-card-in-collection', (req, res) => {
                     res.status(500).send('Internal Server Error');
                     return;
                 }
-// gets value to see if they are the owner. this info is passed on to the view-card-in-collection page to vary the buttons that are shown on that page. 
+                // gets value to see if they are the owner. this info is passed on to the view-card-in-collection page to vary the buttons that are shown on that page. 
                 const isOwner = ownershipResult.length > 0 && ownershipResult[0].user_id === userId;
-              // gets the id of the owner of the collection
-// check if there are cards in the collection. 
+                // gets the id of the owner of the collection
+                // check if there are cards in the collection. 
                 const checkCardsQuery = `SELECT * FROM card_collection WHERE collection_id = ?`;
                 db.query(checkCardsQuery, [collectionId], (err, cardCollectionResults) => {
                     if (err) {
@@ -581,7 +596,7 @@ app.get('/view-card-in-collection', (req, res) => {
                         res.render('view-card-in-collection', {
                             logoPath: 'Pokemon_Logo.png',
                             username: username, ownerPic: ownershipResult[0].profile_picture_url, ownerUsername: ownershipResult[0].username,
-                         isOwner, collectionId: collectionId, userRating: userRating, sess_obj, userdata: userData, currentPage: req.path
+                            isOwner, collectionId: collectionId, userRating: userRating, sess_obj, userdata: userData, currentPage: req.path
                             , cardCollectionResults, collectionName: ownershipResult[0].collection_name
                         });
                     } else {

@@ -98,9 +98,13 @@
                                         </div>
                                         <%} else {%>
                                             <div class="col">
-                                                <button type="button" class="btn btn-secondary mt-3">Remove from
-                                                    Collection</button></td>
+                                                <form action="/remove-from-collection" method="POST">
+                                                    <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
+                                                    <input type="hidden" name="collection_id" value="<%= collectionId %>">
+                                                    <button type="submit" class="btn btn-secondary mt-3">Remove from Collection</button>
+                                                </form>
                                             </div>
+                                            
                                             <%}%>
 
                                 </div>

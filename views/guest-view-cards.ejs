@@ -24,8 +24,6 @@
       <!-- dropdown for sorting the cards -->
     <%-include('filters')%>
     <hr>
-
-
             <div class="container">
               <div class="row">
                 <% cards.forEach((card, index)=> { %>
@@ -99,7 +97,6 @@
                                   <form action="/add-to-collection" method="POST">
                                     <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
                                     <div class="dropdown d-flex justify-content-center">
-
                                       <button class="btn btn-primary dropdown-toggle m-3" type="button"
                                         id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
                                         aria-expanded="false">
