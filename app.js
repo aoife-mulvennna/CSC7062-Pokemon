@@ -115,7 +115,7 @@ app.get('/view-cards', (req, res) => {
 
             const userData = userResults[0];
             username = userData.username;
-            const picUrl = userData.profile_picture_url;
+
             res.render('view-cards', { cards: cardsResults, sess_obj, userdata: userData, currentPage: req.path });
         });
     });
@@ -161,9 +161,9 @@ app.get('/view-collection', (req, res) => {
             }
             const userData = userResults[0];
             const collectionName = results[0].collection_name;
-            username = userData.username;
-            const picUrl = userData.profile_picture_url;
-            res.render('view-collection', { cards: results, username: username, logoPath: 'Pokemon_Logo.png', picUrl: picUrl, sess_obj, userdata: userData, currentPage: req.path, collectionName });
+
+
+            res.render('view-collection', { cards: results, logoPath: 'Pokemon_Logo.png', sess_obj, userdata: userData, currentPage: req.path, collectionName });
         });
 
     });
@@ -448,9 +448,8 @@ app.get('/other-collections', (req, res) => {
                 return;
             }
             const userData = usernameResult[0];
-            const username = usernameResult[0].username;
-            const picURL = results[0].profile_picture_url;
-            res.render('other-collections', { collections: results, logoPath: 'Pokemon_Logo.png', username: username, picUrl: picURL, sess_obj, userdata: userData, currentPage: req.path });
+
+            res.render('other-collections', { collections: results, logoPath: 'Pokemon_Logo.png', sess_obj, userdata: userData, currentPage: req.path });
         })
     });
 });
@@ -490,7 +489,7 @@ app.get('/view-card-in-collection', (req, res) => {
             const userData = usernameResult[0];
             const userRating = ratingResult.length > 0 ? ratingResult[0].rating_value : null;
             const username = usernameResult[0].username;
-            const picUrl = usernameResult[0].profile_picture_url;
+
             // check if the logged in user owns the collection
             const checkOwnershipQuery = `SELECT u.user_id, pp.profile_picture_url, u.username, c.collection_name FROM collection c INNER JOIN user u ON u.user_id = c.user_id INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id WHERE collection_id = ?`;
             db.query(checkOwnershipQuery, [collectionId], (err, ownershipResult) => {
@@ -515,7 +514,7 @@ app.get('/view-card-in-collection', (req, res) => {
                         console.log("Collection is empty");
                         res.render('view-card-in-collection', {
                             logoPath: 'Pokemon_Logo.png',
-                            username: username, ownerPic: ownershipResult[0].profile_picture_url, ownerUsername: ownershipResult[0].username,
+                            ownerPic: ownershipResult[0].profile_picture_url, ownerUsername: ownershipResult[0].username,
                             isOwner, collectionId: collectionId, userRating: userRating, sess_obj, userdata: userData, currentPage: req.path
                             , cardCollectionResults, collectionName: ownershipResult[0].collection_name
                         });
@@ -542,7 +541,7 @@ app.get('/view-card-in-collection', (req, res) => {
                             }
                             res.render('view-card-in-collection', {
                                 cards: collectionResults, logoPath: 'Pokemon_Logo.png',
-                                username: username, picUrl: picUrl, ownerPic: ownershipResult[0].profile_picture_url, ownerUsername: ownershipResult[0].username, collectionId: collectionId, userRating: userRating, sess_obj, userdata: userData, currentPage: req.path
+                                username: username, ownerPic: ownershipResult[0].profile_picture_url, ownerUsername: ownershipResult[0].username, collectionId: collectionId, userRating: userRating, sess_obj, userdata: userData, currentPage: req.path
                                 , cardCollectionResults, isOwner: isOwner, collectionName: ownershipResult[0].collection_name
                             });
                         });
@@ -727,43 +726,44 @@ app.post('/delete-account', (req, res) => {
     })
 });
 
-app.get('/guest-view-cards/sort', (req, res) => {
+// app.get('/guest-view-cards/sort', (req, res) => {
 
-    const sort = req.query.sort;
-    const order = req.query.value === 'asc' ? 'ASC' : 'DESC';
+//     const sort = req.query.sort;
+//     const order = req.query.value === 'asc' ? 'ASC' : 'DESC';
 
-    let sortQuery = ` SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, ps.pokemon_stage_name, pc.attack, r.rarity_name, pc.weakness, psn.pokemon_set_name, pc.evolve_from 
-    FROM pokemon_card pc 
-    INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
-    INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-    INNER JOIN pokemon_set psn ON psn.pokemon_set_id = pc.pokemon_set_id
-    INNER JOIN rarity r ON r.rarity_id = pc.rarity_id ORDER BY ${sort} ${order}`;
+//     let sortQuery = ` SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, ps.pokemon_stage_name, pc.attack, r.rarity_name, pc.weakness, psn.pokemon_set_name, pc.evolve_from 
+//     FROM pokemon_card pc 
+//     INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
+//     INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
+//     INNER JOIN pokemon_set psn ON psn.pokemon_set_id = pc.pokemon_set_id
+//     INNER JOIN rarity r ON r.rarity_id = pc.rarity_id ORDER BY ${sort} ${order}`;
 
-    db.query(sortQuery, (err, result) => {
-        // if (err) throw err;
+//     db.query(sortQuery, (err, result) => {
+//         // if (err) throw err;
 
-        const stageQuery = `SELECT * FROM pokemon_stage`;
-        db.query(stageQuery, (err, stageResults) => {
-            // if (err) throw err;
+//         const stageQuery = `SELECT * FROM pokemon_stage`;
+//         db.query(stageQuery, (err, stageResults) => {
+//             // if (err) throw err;
 
-            const rarityQuery = `SELECT * FROM rarity`;
-            db.query(rarityQuery, (err, rarityResults) => {
-                // if (err) throw err;
-                const typeQuery = `SELECT * FROM pokemon_type`;
-                db.query(typeQuery, (err, typeResults) => {
-                    // if (err) throw err;
-                    const setQuery = `SELECT * FROM pokemon_set`;
-                    db.query(setQuery, (err, setResults) => {
-                        // if (err) throw err;
-                        res.render('guest-view-cards', { cards: result, sess_obj: false, currentPage: req.path, stageResults, rarityResults, typeResults, setResults });
-                    });
-                })
-            })
-        })
-    });
-});
+//             const rarityQuery = `SELECT * FROM rarity`;
+//             db.query(rarityQuery, (err, rarityResults) => {
+//                 // if (err) throw err;
+//                 const typeQuery = `SELECT * FROM pokemon_type`;
+//                 db.query(typeQuery, (err, typeResults) => {
+//                     // if (err) throw err;
+//                     const setQuery = `SELECT * FROM pokemon_set`;
+//                     db.query(setQuery, (err, setResults) => {
+//                         // if (err) throw err;
+//                         res.render('guest-view-cards', { cards: result, sess_obj: false, currentPage: req.path, stageResults, rarityResults, typeResults, setResults });
+//                     });
+//                 })
+//             })
+//         })
+//     });
+// });
 
 app.get('/guest-view-cards', (req, res) => {
+
     let sess_obj = req.session;
     const selectedRarities = req.query.rarity;
     console.log('Selected rarities:', selectedRarities);
@@ -773,6 +773,11 @@ app.get('/guest-view-cards', (req, res) => {
     console.log('Selected sets:', selectedSets);
     const selectedTypes = req.query.type;
     console.log('Selected types:', selectedTypes);
+
+
+    const sort = req.query.sort;
+    const order = req.query.value === 'asc' ? 'ASC' : 'DESC';
+
     let query = `
     SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, 
            ps.pokemon_stage_name, r.rarity_name, w.weakness_type, w.weakness_strength, 
@@ -782,9 +787,9 @@ app.get('/guest-view-cards', (req, res) => {
     INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
     INNER JOIN pokemon_set psn ON psn.pokemon_set_id = pc.pokemon_set_id
     INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
-   INNER JOIN weakness w ON w.card_id = pc.pokemon_card_id`;
+   INNER JOIN weakness w ON w.card_id = pc.pokemon_card_id WHERE 1=1`;
 
-    
+
     if (selectedRarities && selectedRarities.length > 0) {
         if (!Array.isArray(selectedRarities)) {
             query += ` AND r.rarity_name = '${selectedRarities}'`;
@@ -812,6 +817,9 @@ app.get('/guest-view-cards', (req, res) => {
         } else {
             query += ` AND pt.pokemon_type_name IN ('${selectedTypes.join("','")}')`;
         }
+    }
+    if (sort) {
+        query += ` ORDER BY ${sort} ${order}`;
     }
     console.log('Generated SQL Query:', query);
     db.query(query, (err, results) => {
@@ -849,11 +857,11 @@ app.get('/guest-view-cards', (req, res) => {
                                     return;
                                 }
                                 const userData = userResults[0];
-                           
+
                                 const collectionNameQuery = `SELECT collection.collection_id, collection.collection_name FROM collection WHERE user_id = ?`;
                                 db.query(collectionNameQuery, [uid], (err, collectionNameResults) => {
                                     // if (err) throw err;
-                                    
+
                                     res.render('guest-view-cards', { cards: results, sess_obj: true, userdata: userData, currentPage: req.path, stageResults, rarityResults, typeResults, setResults, collectionNameResults, numberResults });
                                 });
                             });
@@ -868,7 +876,7 @@ app.get('/guest-view-cards', (req, res) => {
 app.get('/create-collection', (req, res) => {
     let sess_obj = req.session;
     const uid = sess_obj.authen;
-    const getUserData = `SELECT user.username, pp.profile_picture_url FROM user INNER JOIN profile_picture pp ON user.profile_picture_id = pp.profile_picture_id WHERE user_id = ?`;
+    const getUserData = `SELECT user.username, pp.profile_picture_url FROM user INNER JOIN profile_picture pp ON user.profile_picture_id = pp.profile_picture_id WHERE user.user_id = ?`;
     db.query(getUserData, [uid], (err, userResults) => {
         res.render('create-collection', { sess_obj: true, currentPage: req.path, userdata: userResults });
     })
@@ -887,7 +895,6 @@ app.post('/create-collection', (req, res) => {
             res.status(500).send('An error occurred while creating the collection.');
         } else {
             // Collection successfully created
-            // res.redirect('/view-my-collections'); 
             console.log('new collection created successfully');
             res.redirect(req.get('referer'));
         }
@@ -933,9 +940,8 @@ app.get('/view-wishlist', (req, res) => {
                 return;
             }
             const userData = userResults[0];
-            username = userData.username;
-            const picUrl = userData.profile_picture_url;
-            res.render('view-wishlist', { cards: results, username: username, logoPath: 'Pokemon_Logo.png', picUrl: picUrl, sess_obj: true, userdata: userData, currentPage: req.path });
+
+            res.render('view-wishlist', { cards: results, logoPath: 'Pokemon_Logo.png', sess_obj: true, userdata: userData, currentPage: req.path });
         });
 
     });
@@ -973,8 +979,8 @@ app.post('/add-to-wishlist', getUserIdFromSession, (req, res) => {
                 }
             } else {
                 console.log("successfully added to wishlist");
-               res.redirect(req.get('referer'));
-               
+                res.redirect(req.get('referer'));
+
             }
         });
 
@@ -1061,13 +1067,72 @@ app.get('/view-my-collections', (req, res) => {
                 return;
             }
             const userData = usernameResult[0];
-            const username = usernameResult[0].username;
-            const picURL = results[0].profile_picture_url;
-            res.render('view-my-collections', { collections: results, logoPath: 'Pokemon_Logo.png', username: username, picUrl: picURL, sess_obj, userdata: userData, currentPage: req.path });
+
+            res.render('view-my-collections', { collections: results, logoPath: 'Pokemon_Logo.png', sess_obj, userdata: userData, currentPage: req.path });
         })
 
     });
 });
+
+
+app.get('/view-card-details', (req, res) => {
+    const sess_obj = req.session;
+    console.log('user authentication:',sess_obj.authen);
+    const cardID = req.query.card_id;
+    let query = `
+    SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, 
+           ps.pokemon_stage_name, r.rarity_name, w.weakness_type, w.weakness_strength, 
+           psn.pokemon_set_name, pc.evolve_from, pc.illustrators, pc.attack_name, pc.attack_description, pc.attack_damage 
+    FROM pokemon_card pc 
+    INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
+    INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
+    INNER JOIN pokemon_set psn ON psn.pokemon_set_id = pc.pokemon_set_id
+    INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
+   INNER JOIN weakness w ON w.card_id = pc.pokemon_card_id WHERE pc.pokemon_card_id= ?`;
+    db.query(query, [cardID], (err, results) => {
+        if (err) {
+            console.error("Error fetching card details:", err);
+            res.status(500).send("Internal Server Error");
+            return;
+        }
+        if (results.length === 0) {
+            // Handle case where card details are not found
+            res.status(404).send("Card details not found");
+            return;
+        }
+        console.log('sess_obj.authen:', sess_obj.authen);
+        if (sess_obj.authen) {
+            const uid = sess_obj.authen;
+            console.log('uid:', uid)
+            const getUserQuery = `SELECT u.username, pp.profile_picture_url FROM 
+user u INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id 
+WHERE u.user_id = ?`;
+            db.query(getUserQuery, [uid], (err, userResults) => {
+                if (err) {
+                    console.error("Error fetching user data:", err);
+                    res.status(500).send("Internal Server Error");
+                    return;
+                }
+                if (userResults.length === 0) {
+                    res.status(404).send("User not found");
+                    return;
+                }
+                const userData = userResults[0];
+                const collectionNameQuery = `SELECT collection.collection_id, collection.collection_name FROM collection WHERE user_id = ?`;
+                                db.query(collectionNameQuery, [uid], (err, collectionNameResults) => {
+
+                res.render('card-details', { details: results[0], userdata: userData, currentPage: req.path, sess_obj:true, cardID, collectionNameResults });
+            });
+        });
+        } else {
+            console.log('results : ', results);
+            res.render('card-details', { details: results[0], sess_obj:false, currentPage: req.path, cardID });
+
+
+        }
+    });
+});
+
 
 app.listen(3000, () => {
     console.log('Server on port 3000');

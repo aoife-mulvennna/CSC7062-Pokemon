@@ -14,15 +14,16 @@
 
 <body>
     <%- include ('navbar') %>
-        <div class="container mt-5 mb-5 text-center">
+        <div class="container mt-5 mb-5 text-center view-container">
             <h2>Create a new collection!</h2>
-            <form action="/create-collection" method="post">
+            <form action="/create-collection" method="POST">
                 <div class="mb-3">
-                    <label for="email">Collection Name:</label>
+                    <label for="collectionNameField">Collection Name:</label>
                     <input class="w-50" type="text" name="collectionNameField" placeholder="Enter a name for your collection" required>
                 </div>
+                <button class="btn btn-primary" type="submit">Create Collection</button>
             </form>
-            <button class="btn btn-primary" type="submit">Create Collection</button>
+         
         </div>
         <%-include('footer')%>
 </body>
