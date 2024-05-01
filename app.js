@@ -775,13 +775,16 @@ app.get('/guest-view-cards', (req, res) => {
     console.log('Selected types:', selectedTypes);
     let query = `
     SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, 
-           ps.pokemon_stage_name, pc.attack, r.rarity_name, pc.weakness, 
-           psn.pokemon_set_name, pc.evolve_from 
+           ps.pokemon_stage_name, r.rarity_name, w.weakness_type, w.weakness_strength, 
+           psn.pokemon_set_name, pc.evolve_from, pc.illustrators, pc.attack_name, pc.attack_description, pc.attack_damage 
     FROM pokemon_card pc 
     INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
     INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
     INNER JOIN pokemon_set psn ON psn.pokemon_set_id = pc.pokemon_set_id
-    INNER JOIN rarity r ON r.rarity_id = pc.rarity_id`;
+    INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
+   INNER JOIN weakness w ON w.card_id = pc.pokemon_card_id`;
+
+    
     if (selectedRarities && selectedRarities.length > 0) {
         if (!Array.isArray(selectedRarities)) {
             query += ` AND r.rarity_name = '${selectedRarities}'`;
@@ -825,9 +828,11 @@ app.get('/guest-view-cards', (req, res) => {
                     // if (err) throw err;
                     const setQuery = `SELECT * FROM pokemon_set`;
                     db.query(setQuery, (err, setResults) => {
+                        let numberResults = results.length;
                         // if (err) throw err;
                         if (!sess_obj.authen) {
-                            res.render('guest-view-cards', { cards: results, sess_obj: false, currentPage: req.path, stageResults, rarityResults, typeResults, setResults });
+                            console.log('results: ', results)
+                            res.render('guest-view-cards', { cards: results, sess_obj: false, currentPage: req.path, stageResults, rarityResults, typeResults, setResults, numberResults });
                         } else {
                             const uid = sess_obj.authen;
                             const getUserQuery = `SELECT u.username, pp.profile_picture_url FROM 
@@ -844,11 +849,12 @@ app.get('/guest-view-cards', (req, res) => {
                                     return;
                                 }
                                 const userData = userResults[0];
-                                username = userData.username;
+                           
                                 const collectionNameQuery = `SELECT collection.collection_id, collection.collection_name FROM collection WHERE user_id = ?`;
                                 db.query(collectionNameQuery, [uid], (err, collectionNameResults) => {
                                     // if (err) throw err;
-                                    res.render('guest-view-cards', { cards: results, sess_obj: true, userdata: userData, currentPage: req.path, stageResults, rarityResults, typeResults, setResults, collectionNameResults });
+                                    
+                                    res.render('guest-view-cards', { cards: results, sess_obj: true, userdata: userData, currentPage: req.path, stageResults, rarityResults, typeResults, setResults, collectionNameResults, numberResults });
                                 });
                             });
                         }

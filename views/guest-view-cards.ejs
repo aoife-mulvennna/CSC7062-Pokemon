@@ -22,140 +22,251 @@
       <hr>
       <h4>Filter:</h4>
       <!-- dropdown for sorting the cards -->
-    <%-include('filters')%>
-    <hr>
-            <div class="container">
-              <div class="row">
-                <% cards.forEach((card, index)=> { %>
-                  <div class="col-md-3 mb-3">
-                    <button type="button" class="btn mt-3" data-bs-toggle="modal"
-                      data-bs-target="#myModal_<%= index %>">
-                      <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="250">
-                    </button>
-                    <div class="m-4">
-                      <!-- The Modal -->
-                      <div id="myModal_<%= index %>" class="modal fade" tabindex="-1">
-                        <div class="modal-dialog ">
-                          <div class="modal-content">
-                            <div class="modal-header">
-                              <h5 class="modal-title">
-                                <%= card.pokemon_name %>
-                              </h5>
-                              <button type="button" class="btn-close" data-bs-dismiss="modal">
-                              </button>
-                            </div>
+      <div class="row">
+        <div class="col">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle mb-3" type="button" id="dropdownMenuButton1"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              Sort By
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+              <li><a class="dropdown-item" href="guest-view-cards/sort?sort=pokemon_name&value=asc">Card Name (A-Z)</a>
+              </li>
+              <li><a class="dropdown-item" href="guest-view-cards/sort?sort=pokemon_name&value=desc">Card Name (Z-A)</a>
+              </li>
+              <li><a class="dropdown-item" href="#">Rarity (desc)</a></li>
+              <li><a class="dropdown-item" href="#">Rarity (asc)</a></li>
+            </ul>
+          </div>
+        </div>
 
-                            <div class="modal-body">
-                              <div class="row">
-                                <div class="col-md-6">
-                                  <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="210">
-                                </div>
-
-                                <div class="col-md-6">
-                                  <ul class="list-unstyled card-details">
-                                    <!-- <li><strong class="title">Name: </strong>
-                                    <%= card.pokemon_name %>
-                                  </li> -->
-                                    <li><strong class="title">Type: </strong>
-                                      <%= card.pokemon_type_name %>
-                                    </li>
-                                    <li><strong class="title">Hp: </strong>
-                                      <%= card.hp %>
-                                    </li>
-                                    <li><strong class="title">Stage: </strong>
-                                      <%= card.pokemon_stage_name %>
-                                    </li>
-                                    <li><strong class="title">Attack: </strong>
-                                      <%= card.attack %>
-                                    </li>
-                                    <li><strong class="title">Rarity: </strong>
-                                      <%= card.rarity_name %>
-                                    </li>
-                                    <li><strong class="title">Weakness: </strong>
-                                      <%= card.weakness %>
-                                    </li>
-                                    <li><strong class="title">Set: </strong>
-                                      <%= card.pokemon_set_name %>
-                                    </li>
-                                    <li><strong class="title">Evolves from: </strong>
-                                      <%= card.evolve_from || 'None' %>
-                                    </li>
-
-                                  </ul>
-                                </div>
-                                <% if (!sess_obj){ %>
-                                  <div class="d-flex justify-content-between align-items-center">
-                                    Create an account to add to your collection!
-                                  </div>
-                              </div>
-                              <% } else { %>
-                                <div class="d-flex align-items-center">
-                                  <form action="/add-to-wishlist" method="POST">
-                                    <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
-                                    <button type="submit" class="btn btn-secondary m-3">Add to Wishlist</button>
-                                  </form>
-                                  <form action="/add-to-collection" method="POST">
-                                    <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
-                                    <div class="dropdown d-flex justify-content-center">
-                                      <button class="btn btn-primary dropdown-toggle m-3" type="button"
-                                        id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
-                                        aria-expanded="false">
-                                        Add to Collection
-                                      </button>
-                                      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                        <% collectionNameResults.forEach((collection)=> { %>
-                                          <button class="dropdown-item" type="submit" name="collection_id"
-                                            value="<%= collection.collection_id %>">
-                                            <%= collection.collection_name %>
-                                          </button>
-                                          <% }); %>
-                                      </div>
-                                    </div>
-                                  </form>
-                                </div>
-                                <%}%>
-                            </div>
+        <!-- dropdown for list of filters -->
+        <div class="col">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              Filter
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <form action="/guest-view-cards" method="GET">
+                <div class="container">
+                  <div class="row">
+                    <div class="col-6">
+                      <div>
+                        <h4>Set</h4>
+                        <% setResults.forEach((set)=> { %>
+                          <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="set_<%= set.pokemon_set_id %>"
+                              name="set" value="<%= set.pokemon_set_name%>">
+                            <label class="form-check-label" for="set_<%= set.pokemon_set_id %>">
+                              <%= set.pokemon_set_name %>
+                            </label>
                           </div>
-                        </div>
+                          <% }); %>
+                      </div>
+                      <div>
+                        <h4>Stage</h4>
+                        <% stageResults.forEach((stage)=> { %>
+                          <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="stage_<%= stage.pokemon_stage_id %>"
+                              name="stage" value="<%= stage.pokemon_stage_name%>">
+                            <label class="form-check-label" for="stage_<%= stage.pokemon_stage_id %>">
+                              <%= stage.pokemon_stage_name %>
+                            </label>
+                          </div>
+                          <% }); %>
+                      </div>
+                      <div>
+                        <h4>Rarity</h4>
+                        <% rarityResults.forEach((rarity)=> { %>
+                          <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="rarity_<%= rarity.rarity_id %>"
+                              name="rarity" value="<%= rarity.rarity_name%>">
+                            <label class="form-check-label" for="rarity_<%= rarity.rarity_id %>">
+                              <%= rarity.rarity_name %>
+                            </label>
+                          </div>
+                          <% }); %>
                       </div>
                     </div>
+                    <div class="col-6 h-25">
+                      <h4>Type</h4>
+                      <div>
+                        <% typeResults.forEach((type)=> { %>
+                          <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="type_<%= type.pokemon_type_id %>"
+                              name="type" value="<%= type.pokemon_type_name%>">
+                            <label class="form-check-label" for="type_<%= type.pokemon_type_id %>">
+                              <%= type.pokemon_type_name %>
+                            </label>
+                          </div>
+                          <% }); %>
+                      </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Apply</button>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <hr>
+    <div>Number of results found: <%=numberResults%></div>
+    <hr>
+    <div class="container">
+      <div class="row">
+        <% cards.forEach((card, index)=> { %>
+          <div class="col-md-3 mb-3">
+            <button type="button" class="btn mt-3" data-bs-toggle="modal" data-bs-target="#myModal_<%= index %>">
+              <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="250">
+            </button>
+            <div class="m-4">
+              <!-- The Modal -->
+              <div id="myModal_<%= index %>" class="modal fade" tabindex="-1">
+                <div class="modal-dialog ">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title">
+                        <%= card.pokemon_name %>
+                      </h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal">
+                      </button>
+                    </div>
+
+                    <div class="modal-body">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>" width="210">
+                        </div>
+
+                        <div class="col-md-6">
+                          <ul class="list-unstyled card-details">
+                            <!-- <li><strong class="title">Name: </strong>
+                                    <%= card.pokemon_name %>
+                                  </li> -->
+                            <li><strong class="title">Type: </strong>
+                              <%= card.pokemon_type_name %>
+                            </li>
+                            <li><strong class="title">Hp: </strong>
+                              <%= card.hp %>
+                            </li>
+                            <li><strong class="title">Stage: </strong>
+                              <%= card.pokemon_stage_name %>
+                            </li>
+                            <li><strong class="title">Rarity: </strong>
+                              <%= card.rarity_name %>
+                            </li>
+                            <li><strong class="title">Attack Name</strong>
+                              <%= card.attack_name %>
+                            </li>
+                            <li><strong class="title">Attack Description</strong>
+                              <%= card.attack_description || 'None' %>
+                            </li>
+                            <li><strong class="title">Attack Damage</strong>
+                              <%= card.attack_damage || 'None' %>
+                            </li>
+                            <li><strong class="title">Set: </strong>
+                              <%= card.pokemon_set_name %>
+                            </li>
+                            <li><strong class="title">Evolves from: </strong>
+                              <%= card.evolve_from || 'None' %>
+                            </li>
+
+                            <li><strong class="title">Weakness type</strong>
+                              <%= card.weakness_type %>
+                            </li>
+                            <li><strong class="title">Weakness strength</strong>
+                              <%= card.weakness_strength %>
+                            </li>
+                            <li><strong class="title">illustrator</strong>
+                              <%= card.illustratorS %>
+                            </li>
+
+                          </ul>
+                        </div>
+
+                        <% if (!sess_obj){ %>
+                          <div class="d-flex justify-content-between align-items-center">
+                            Create an account to add to your collection!
+                          </div>
+                      </div>
+                      <% } else { %>
+                        <!-- button to add card to wishlist -->
+                        <div class="d-flex align-items-center">
+                          <form action="/add-to-wishlist" method="POST">
+                            <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
+                            <button type="submit" class="btn btn-secondary m-3">Add to Wishlist</button>
+                          </form>
+                          <!-- button to add to collection and choose which collection to add to -->
+                          <form action="/add-to-collection" method="POST">
+                            <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
+                            <div class="dropdown d-flex justify-content-center">
+                              <button class="btn btn-primary dropdown-toggle m-3" type="button" id="dropdownMenuButton"
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Add to Collection
+                              </button>
+                              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <% collectionNameResults.forEach((collection)=> { %>
+                                  <button class="dropdown-item" type="submit" name="collection_id"
+                                    value="<%= collection.collection_id %>">
+                                    <%= collection.collection_name %>
+                                  </button>
+                                  <% }); %>
+                              </div>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
                   </div>
+                  <%}%>
+                </div>
               </div>
-
-              <% }); %>
             </div>
-            </div>
-            </div>
+          </div>
+      </div>
+    </div>
+    <% }); %>
 
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
-            </script>
-            <script>
-              var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
-              var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
-                return new bootstrap.Dropdown(dropdownToggleEl)
-              })
-            </script>
-           
+      </div>
+      </div>
 
-              <link rel="stylesheet"
-                href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.16/css/bootstrap-multiselect.css">
-              <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                  var myModal = new bootstrap.Modal(document.getElementById('myModal'));
+      </div>
+      </div>
+      </div>
+      </div>
+      </div>
 
-                  // Event listener for showing the modal
-                  document.querySelectorAll('[data-bs-toggle="modal"]').forEach(function (button) {
-                    button.addEventListener('click', function () {
-                      var cardData = JSON.parse(this.getAttribute('data-card'));
-                      fillModal(cardData);
-                      myModal.show();
-                    });
-                  });
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
+      </script>
+      <script>
+        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+        var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+          return new bootstrap.Dropdown(dropdownToggleEl)
+        })
+      </script>
 
-                  // Function to fill modal with card details
-                  function fillModal(cardData) {
-                    var cardDetails = document.getElementById('cardDetails');
-                    cardDetails.innerHTML = `
+
+      <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.16/css/bootstrap-multiselect.css">
+      <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          var myModal = new bootstrap.Modal(document.getElementById('myModal'));
+
+          // Event listener for showing the modal
+          document.querySelectorAll('[data-bs-toggle="modal"]').forEach(function (button) {
+            button.addEventListener('click', function () {
+              var cardData = JSON.parse(this.getAttribute('data-card'));
+              fillModal(cardData);
+              myModal.show();
+            });
+          });
+
+          // Function to fill modal with card details
+          function fillModal(cardData) {
+            var cardDetails = document.getElementById('cardDetails');
+            cardDetails.innerHTML = `
                       <li><strong class="title">Name: </strong>${cardData.pokemon_name}</li>
                       <li><strong class="title">Type: </strong>${cardData.pokemon_type_name}</li>
                       <li><strong class="title">Hp: </strong>${cardData.hp}</li>
@@ -166,9 +277,18 @@
                       <li><strong class="title">Set: </strong>${cardData.pokemon_set_name}</li>
                       <li><strong class="title">Evolves from: </strong>${cardData.evolve_from || 'None'}</li>
                       `;
-                  }
-                });
-              </script>
+          }
+        });
+      </script>
+      <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
+    </script> -->
+      <script>
+        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+        var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+          return new bootstrap.Dropdown(dropdownToggleEl)
+        })
+      </script>
 </body>
- <%-include ('footer')%>
+<%-include ('footer')%>
+
 </html>
