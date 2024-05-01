@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Card Details</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="/innerstyle.css">
+</head>
+
+<body>
+
+  <%-include ('navbar')%>
+    <div class="container mt-5 view-container">
+      <h3>
+        <%=details.pokemon_name%>
+      </h3>
+      <hr>
+      <div class="row justify-content-center">
+        <div class="col-5">
+          <img src="<%= details.url_img %>" alt="<%= details.pokemon_name %>" width="300">
+        </div>
+        <div class="col-4">
+          <div class="m-3">
+            <h5>Type</h5>
+            <%=details.pokemon_type_name%>
+          </div>
+          <div class="m-3">
+            <h5>Rarity</h5>
+            <%=details.rarity_name%>
+          </div>
+          <div class="m-3">
+            <h5>Weakness</h5>
+            <%=details.weakness_type%>
+              <%=details.weakness_strength%>
+          </div>
+          <div class="m-3">
+            <h5>Expansion</h5>
+            <%=details.pokemon_set_name%>
+          </div>
+          <% if (details.evolve_from !==null && details.evolve_from !==undefined) { %>
+            <div class="m-3">
+              <h5>Evolves from</h5>
+              <%=details.evolve_from%>
+            </div>
+            <% } %>
+              <div class="m-3">
+                <h5>Illustrator</h5>
+                <%=details.illustrators%>
+              </div>
+              <div class="m-3">
+                <h5>Top Attack</h5>
+                <p>
+                  <%=details.attack_name%>
+                </p>
+                <% if (details.attack_descrption !==null && details.attack_descrption !==undefined) { %>
+                  <p>
+                    <%=details.attack_descrption%>
+                  </p>
+                  <% } %>
+                    <% if (details.attack_damage !==null && details.attack_damage !==undefined) { %>
+                      <p>Damage: <%=details.attack_damage%>
+                      </p>
+                      <% } %>
+              </div>
+
+        </div>
+        <div class="col-3">
+            <% if (!isOwner) { %>
+                <div class="col">
+                    <form action="/add-to-wishlist" method="POST">
+                        <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
+                        <button type="submit" class="btn btn-secondary mt-3">Add to wishlist</button>
+                    </form>
+                </div>
+                <%} else {%>
+                    <div class="col">
+                        <form action="/remove-from-collection" method="POST">
+                            <input type="hidden" name="card_id" value="<%= card.pokemon_card_id %>">
+                            <input type="hidden" name="collection_id" value="<%= collectionId %>">
+                            <button type="submit" class="btn btn-secondary mt-3">Remove from Collection</button>
+                        </form>
+                    </div>
+                    
+                    <%}%>
+      </div>
+
+      </div>
+      </div>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
+      </script>
+      <script>
+        var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+        var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+          return new bootstrap.Dropdown(dropdownToggleEl)
+        })
+      </script>
+
+      <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.16/css/bootstrap-multiselect.css">
+
+
+</body>
+<%-include ('footer')%>
+
+</html>

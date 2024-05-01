@@ -62,36 +62,19 @@
                             <% } %>
                         </div>
                     </div>
-                    <div class="card m-3">
-                        <div class="card-header">
-                            More information
-                        </div>
-                        <div class="card-body">
-                            Still more information
-                            Still more information
-                            Still more information
-                            Still more information
-                            Still more information
-                            Still more information
-                            Still more information
-                            Still more information
-                            Still more information
-                            Still more information
-                            Still more information
-                        </div>
-                    </div>
+                    
                 </div>
                 <!-- This section displays some information about the user. If any of these are 0, prompt user to start a collection! -->
                 <div class="col">
                     <div class="card m-3">
                         <div class="card-header">
-                            My profile!
+                            Your Stats:
                         </div>
                         <div class="card-body">
-                            <p>Number of collections: </p>
-                            <p>You seem to have a favourite pokémon type! </p>
-                            <p>Your most saved pokemon set is: </p>
-                            <p>Rarirty Score: </p>
+                            <p>Number of collections: <%=numCollections%> </p>
+                            <p>You seem to have a favourite pokémon type! <%=mostCommonType%> </p>
+                            <p>Your most saved pokemon set is: <%=mostCommonSet%></p>
+                            <p>Rarity Score: <%=rarityScore%> </p>
          
                         </div>
                     </div>
