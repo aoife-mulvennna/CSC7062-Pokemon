@@ -1,6 +1,5 @@
 const express = require('express');
 const app = express();
-const flash = require('connect-flash');
 
 const mysql = require('mysql2');
 
@@ -10,7 +9,6 @@ app.set('view engine', 'ejs');
 
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
-app.use(flash());
 
 const cookieParser = require('cookie-parser');
 const sessions = require('express-session');
@@ -212,7 +210,13 @@ app.post('/login', (req, res) => {
             return;
         }
         if (results.length === 0) {
-            res.status(401).send('Username or password is incorrect');
+            // res.status(401).send('Username or password is incorrect');
+            // return;
+            res.render('login', { 
+                logoPath: 'Pokemon_Logo.png', 
+                backgroundPath: 'background-2.png', 
+                errorMessage: 'Incorrect username or password. Try again.'
+            });
             return;
         }
         // comparing the hashed password with the input password
@@ -810,7 +814,7 @@ app.get('/browse-cards', (req, res) => {
         query += ` ORDER BY ${sort} ${order}`;
     }
     if (searchTerm) {
-        query += ` AND pc.pokemon_name OR pt.pokemon_type_name OR psn.pokemon_set_name LIKE '%${searchTerm}%'`;
+        query += ` AND pc.pokemon_name LIKE '%${searchTerm}%' OR pt.pokemon_type_name LIKE '%${searchTerm}%' OR psn.pokemon_set_name LIKE '%${searchTerm}%'`;
     }
     console.log('Generated SQL Query:', query);
     db.query(query, (err, results) => {

@@ -54,7 +54,6 @@
                             <% if (cardOfTheDay) { %>
                             <h5 class="card-title">
                                 <%= cardOfTheDay.pokemon_name %>
-                                <%=cardOfTheDay.card_id%>
                             </h5>
                             <form action="/view-card-details?card_id=<%= cardOfTheDay.card_id %>" method="GET">
                                 <input type="hidden" name="card_id" value="<%= cardOfTheDay.card_id%>">
@@ -97,7 +96,8 @@
                 </div>
             </div>
             
-                <%-include ('footer')%>
+           </div>    
 </body>
+<%-include ('footer')%>
 
 </html>
