@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>View Cards</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="stylesheet" type="text/css" href="/innerstyle.css">
+</head>
+
+<body>
+
+  <%-include ('navbar')%>
+
+    <div class="container mt-5 view-container">
+
+      <h3>All Cards</h3>
+      <hr>
+      <h4>Filter:</h4>
+      <!-- dropdown for sorting the cards -->
+      <div class="row">
+        <form action="/browse-cards" method="GET" class="mb-3">
+          <div class="input-group">
+              <input type="text" class="form-control" placeholder="Search by Pokémon name, type or set" name="search">
+              <button class="btn btn-outline-secondary" type="submit">Search</button>
+          </div>
+      </form>
+        <div class="col">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle mb-3" type="button" id="dropdownMenuButton1"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              Sort By
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+              <li><a class="dropdown-item" href="browse-cards?sort=pokemon_name&value=asc">Card Name (A-Z)</a>
+              </li>
+              <li><a class="dropdown-item" href="browse-cards?sort=pokemon_name&value=desc">Card Name (Z-A)</a>
+              </li>
+              <li><a class="dropdown-item" href="#">Rarity (desc)</a></li>
+              <li><a class="dropdown-item" href="#">Rarity (asc)</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- dropdown for list of filters -->
+        <div class="col">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1"
+              data-bs-toggle="dropdown" aria-expanded="false">
+              Filter
+            </button>
+            <div class="dropdown-menu dropdown-menu-lg" aria-labelledby="dropdownMenuButton">
+              <form action="/browse-cards" method="GET">
+                <div class="container">
+                  <div class="row">
+
+                    <div>
+                      <h4>Set</h4>
+                      <% setResults.forEach((set)=> { %>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="set_<%= set.pokemon_set_id %>" name="set"
+                            value="<%= set.pokemon_set_name%>">
+                          <label class="form-check-label" for="set_<%= set.pokemon_set_id %>">
+                            <%= set.pokemon_set_name %>
+                          </label>
+                        </div>
+                        <% }); %>
+                    </div>
+                    <div>
+                      <h4>Stage</h4>
+                      <% stageResults.forEach((stage)=> { %>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="stage_<%= stage.pokemon_stage_id %>"
+                            name="stage" value="<%= stage.pokemon_stage_name%>">
+                          <label class="form-check-label" for="stage_<%= stage.pokemon_stage_id %>">
+                            <%= stage.pokemon_stage_name %>
+                          </label>
+                        </div>
+                        <% }); %>
+                    </div>
+                    <div>
+                      <h4>Rarity</h4>
+                      <% rarityResults.forEach((rarity)=> { %>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="rarity_<%= rarity.rarity_id %>"
+                            name="rarity" value="<%= rarity.rarity_name%>">
+                          <label class="form-check-label" for="rarity_<%= rarity.rarity_id %>">
+                            <%= rarity.rarity_name %>
+                          </label>
+                        </div>
+                        <% }); %>
+                    </div>
+
+                    <h4>Type</h4>
+                    <div>
+                      <% typeResults.forEach((type)=> { %>
+                        <div class="form-check">
+                          <input type="checkbox" class="form-check-input" id="type_<%= type.pokemon_type_id %>"
+                            name="type" value="<%= type.pokemon_type_name%>">
+                          <label class="form-check-label" for="type_<%= type.pokemon_type_id %>">
+                            <%= type.pokemon_type_name %>
+                          </label>
+                        </div>
+                        <% }); %>
+                    </div>
+                  </div>
+                  <button type="submit" class="btn btn-primary">Apply</button>
+              </form>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+
+    <hr>
+    <div>Number of results found: <%=numberResults%>
+    </div>
+    <hr>
+    <div class="container">
+      <div class="row">
+        <% cards.forEach((card, index)=> { %>
+          <div class="col-md-3 mb-3">
+
+            <form action="/view-card-details?card_id=<%= card.pokemon_card_id %>" method="GET">
+              <input type="hidden" name="card_id" value="<%= card.pokemon_card_id%>">
+              <button type="submit" class="btn  mt-3 mb-3"><img src="<%= card.url_img %>" alt="<%= card.pokemon_name %>"
+                  width="250"></button>
+            </form>
+          </div>
+
+
+
+          <% }); %>
+
+      </div>
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
+    </script>
+    <script>
+      var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+      var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+        return new bootstrap.Dropdown(dropdownToggleEl)
+      })
+    </script>
+
+
+    <link rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-multiselect/0.9.16/css/bootstrap-multiselect.css">
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js">
+    </script> -->
+    <script>
+      var dropdownElementList = [].slice.call(document.querySelectorAll('.dropdown-toggle'))
+      var dropdownList = dropdownElementList.map(function (dropdownToggleEl) {
+        return new bootstrap.Dropdown(dropdownToggleEl)
+      })
+    </script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        // Get the dropdown menu and its height
+        var dropdownMenu = document.querySelector('.dropdown-menu-lg');
+        console.log("Dropdown Menu:", dropdownMenu);
+        var dropdownMenuHeight = dropdownMenu.offsetHeight;
+        console.log("Dropdown Menu Height:", dropdownMenuHeight);
+
+        // Calculate the number of items per column
+        var itemsPerColumn = 5; // Adjust as needed
+        var itemHeight = dropdownMenu.querySelector('.dropdown-item').offsetHeight;
+        console.log("Item Height:", itemHeight);
+        var numItems = dropdownMenu.children.length;
+        console.log("Number of Items:", numItems);
+        var numColumns = Math.ceil(numItems / itemsPerColumn);
+        console.log("Number of Columns:", numColumns);
+
+        // Set the height of the dropdown menu to fit the items
+        dropdownMenu.style.height = (numColumns * itemHeight) + 'px';
+        console.log("Dropdown Menu Height Updated:", dropdownMenu.style.height);
+      });
+    </script>
+
+</body>
+<%-include ('footer')%>
+
+</html>

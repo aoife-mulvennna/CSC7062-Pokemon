@@ -47,3 +47,10 @@ body{
   padding: 2%;
   border-radius: 2%;
 }
+.dropdown-menu-lg {
+  min-width: 20rem; 
+}
+
+.custom-btn-width{
+  width:200px;
+}

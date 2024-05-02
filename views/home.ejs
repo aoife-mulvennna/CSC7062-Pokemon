@@ -54,9 +54,15 @@
                             <% if (cardOfTheDay) { %>
                             <h5 class="card-title">
                                 <%= cardOfTheDay.pokemon_name %>
+                                <%=cardOfTheDay.card_id%>
                             </h5>
-                            <img src="<%= cardOfTheDay.url_img %>" class="card-img-top" alt="<%= cardOfTheDay.pokemon_name %>">
-                            <!-- Add other card details here -->
+                            <form action="/view-card-details?card_id=<%= cardOfTheDay.card_id %>" method="GET">
+                                <input type="hidden" name="card_id" value="<%= cardOfTheDay.card_id%>">
+                                <button type="submit" class="btn  mt-3 mb-3">  <img src="<%= cardOfTheDay.url_img %>" class="card-img-top" alt="<%= cardOfTheDay.pokemon_name %>">
+                                  </button>
+                                </form>
+                                
+                          
                             <% } else { %>
                             <p>No card of the day available.</p>
                             <% } %>
