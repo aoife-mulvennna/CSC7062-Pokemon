@@ -10,8 +10,8 @@ app.use(express.urlencoded({ extended: true }));
 const cookieParser = require('cookie-parser');
 const sessions = require('express-session');
 const moment = require('moment');
-// const oneHour = 1000 * 60 * 60 * 1;
-const oneDay = 1000 * 60 * 60 * 24; // This will be 24 hours (1 day)
+const oneHour = 1000 * 60 * 60 * 1;
+// const oneDay = 1000 * 60 * 60 * 24;
 
 
 app.use(cookieParser());
@@ -19,7 +19,7 @@ app.use(cookieParser());
 app.use(sessions({
     secret: "mypokemon12",
     saveUninitialized: true,
-    cookie: { maxAge: oneDay },
+    cookie: { maxAge: oneHour * 3 },
     resave: false
 }));
 
@@ -34,8 +34,8 @@ const db = mysql.createConnection({
 
 const getUserIdFromSession = (req, res, next) => {
     let sess_obj = req.session;
-    req.userId = sess_obj.authen; // Assuming the user ID is stored in sess_obj.authen
-    next(); // Call next to proceed to the next middleware or route handler
+    req.userId = sess_obj.authen; 
+    next(); 
 };
 
 function selectRandomCard() {
@@ -110,7 +110,7 @@ app.get('/home', async (req, res) => {
                 LIMIT 1`, [userID]
             );
             const mostCommonType = typeResult.length > 0 ? typeResult[0].pokemon_type_name : "No data";
-            // Fetch most common Pokémon set
+            // get most common Pokémon set
             const [setResult] = await db.promise().query(
                 `SELECT pokemon_set_name, COUNT(*) AS set_count 
                 FROM collection c 
