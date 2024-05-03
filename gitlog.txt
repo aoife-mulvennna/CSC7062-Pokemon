@@ -1,0 +1,501 @@
+commit 317f958b8ec3fe4b45fbb7d9007b012f6f5725e6
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-05-02T22:54:58+01:00
+
+    adds responsiveness to display using bootstrap
+
+8	4	app.js
+1	2	public/innerstyle.css
+81	78	views/browse-cards.ejs
+1	1	views/card-details.ejs
+1	1	views/collection-card-details.ejs
+1	1	views/footer.ejs
+2	2	views/home.ejs
+1	1	views/navbar.ejs
+
+commit 5bf118781d7e1337e5e030e591d51c4e069218bb
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-05-02T19:11:13+01:00
+
+    user can view card of the day details by clicking on it. login page displays error message if incorrect password. some css fixes.
+
+159	236	app.js
+1	1	guest-views/guest-about.html
+1	1	guest-views/guest-view-cards.html
+1	1	guest-views/home.html
+0	1	package.json
+7	0	public/innerstyle.css
+1	1	ss/pages/navbar-guest.ejs
+0	0	{views => ss}/view-cards.ejs
+192	0	views/browse-cards.ejs
+46	46	views/card-details.ejs
+3	3	views/filters.ejs
+0	192	views/guest-view-cards.ejs
+8	2	views/home.ejs
+20	12	views/login.ejs
+2	2	views/navbar.ejs
+1	25	views/view-account.ejs
+
+commit 8d275b36f8841a7b8b0d404ad55e11788cb82198
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-05-01T22:07:50+01:00
+
+    adds new home page statistics feature. updates collections and wishlist pages with new information from updated database
+
+118	45	app.js
+111	0	views/collection-card-details.ejs
+19	37	views/guest-access.ejs
+6	23	views/home.ejs
+75	70	views/view-card-in-collection.ejs
+79	62	views/view-wishlist.ejs
+
+commit dc845cff332b7cb12ef01e4bab832254646fc767
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-05-01T18:15:14+01:00
+
+    changes the display of details about the card
+
+124	59	app.js
+0	1	public/innerstyle.css
+101	153	views/card-details.ejs
+5	4	views/create-collection.ejs
+1	1	views/guest-access.ejs
+48	150	views/guest-view-cards.ejs
+1	1	views/home.ejs
+0	1	views/navbar.ejs
+1	1	views/other-collections.ejs
+1	1	views/view-account.ejs
+1	1	views/view-card-in-collection.ejs
+1	1	views/view-cards.ejs
+2	2	views/view-collection.ejs
+2	2	views/view-my-collections.ejs
+2	2	views/view-wishlist.ejs
+
+commit f5da39c8dbd1d58bee2bbaf8dc1477f9cd2f9af7
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-05-01T16:10:33+01:00
+
+    makes changes to database and fixes filter issues.
+
+12	6	app.js
+4	3	views/guest-access.ejs
+245	125	views/guest-view-cards.ejs
+
+commit 8aedce953f2e57a3cfb2bc86a8ad2bd19c49bc7d
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-30T23:15:09+01:00
+
+    fixes issues with rendering and crashing when adding/removing from collections and wishlists
+
+73	97	app.js
+83	9	views/guest-access.ejs
+9	0	views/view-account.ejs
+
+commit 68b4b904ca4e2968cc2f62c142e5709117c5f42b
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-30T20:49:48+01:00
+
+    additional changes - computer needs restarted
+
+58	43	app.js
+0	3	views/guest-view-cards.ejs
+6	2	views/view-card-in-collection.ejs
+
+commit 93966fb0b395a007809c3038b6d26556aceecee3
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-30T17:37:12+01:00
+
+    updates viewing cards, allows users to choose collection to add card to
+
+14	38	app.js
+14	1	public/innerstyle.css
+115	0	views/filters.ejs
+59	187	views/guest-view-cards.ejs
+25	39	views/home.ejs
+73	52	views/view-card-in-collection.ejs
+1	6	views/view-cards.ejs
+
+commit 35276acdb4422a727128b3b1001999aee3619e32
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-30T13:22:16+01:00
+
+    new feature card of the day. bug fixes on user collections.
+
+193	70	app.js
+9	0	package-lock.json
+1	0	package.json
+178	56	views/card-details.ejs
+1	1	views/footer.ejs
+180	178	views/guest-view-cards.ejs
+110	22	views/home.ejs
+118	51	views/navbar.ejs
+35	31	views/other-collections.ejs
+4	1	views/view-account.ejs
+78	77	views/view-card-in-collection.ejs
+6	5	views/view-my-collections.ejs
+1	1	views/view-wishlist.ejs
+
+commit e420dd24bdfb64b6f98db95a8e17c1016c9ea575
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-28T13:09:01+01:00
+
+    adds user wishlists, ability for users to have and view multiple collections
+
+208	20	app.js
+30	0	views/create-collection.ejs
+18	7	views/guest-view-cards.ejs
+4	3	views/navbar.ejs
+1	5	views/view-account.ejs
+9	53	views/view-cards.ejs
+3	4	views/view-collection.ejs
+75	0	views/view-my-collections.ejs
+89	0	views/view-wishlist.ejs
+
+commit cf432093f4ebc6a9d13b91563dd716f9fc587c84
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-27T18:25:15+01:00
+
+    allows users to filter multiple criteria
+
+13	224	app.js
+9	0	package-lock.json
+1	0	package.json
+166	185	views/guest-view-cards.ejs
+1	2	views/navbar.ejs
+4	4	views/view-account.ejs
+58	2	views/view-cards.ejs
+
+commit 62ee7aaa3c3357f8d794616ea23c5242ee6fae30
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-27T14:21:44+01:00
+
+    adds individual filters
+
+40	15	app.js
+40	16	views/guest-view-cards.ejs
+
+commit a882c3cfaecf777a6a63927a5c70781a3bf3fa82
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-27T13:18:31+01:00
+
+    changes guest view cards layout
+
+49	36	app.js
+137	27	views/guest-view-cards.ejs
+
+commit 87f278515c0274ebc653729e90393fcb12b65c18
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-25T17:31:05+01:00
+
+    adds filter for rarity
+
+71	17	app.js
+8	1	public/innerstyle.css
+5	5	views/footer.ejs
+2	0	views/guest-access.ejs
+16	117	views/guest-view-cards.ejs
+1	1	views/home.ejs
+1	0	views/other-collections.ejs
+1	1	views/view-account.ejs
+3	2	views/view-card-in-collection.ejs
+1	1	views/view-cards.ejs
+1	1	views/view-collection.ejs
+
+commit 22bd28335a9d4cdb9b1e811fe434ab55b1441cbc
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-25T14:27:22+01:00
+
+    sorts by card name ascending and descending
+
+37	1	app.js
+24	0	views/footer.ejs
+3	2	views/guest-view-cards.ejs
+
+commit 97938533b8192c091d6f11a4d5a0e221d7b85fd5
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-25T13:21:46+01:00
+
+    populates filter dropdowns using tables
+
+25	3	app.js
+3	1	views/guest-access.ejs
+139	77	views/guest-view-cards.ejs
+0	24	views/home.ejs
+0	25	views/other-collections.ejs
+0	25	views/view-account.ejs
+0	24	views/view-cards.ejs
+0	2	views/view-collection.ejs
+
+commit 0b3b81df9e076b52b65944a3e82e77bd598a12c7
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-25T12:40:36+01:00
+
+    navigation bar is dynamic
+
+15	10	app.js
+0	0	{views => ss/pages}/navbar-guest.ejs
+1	24	views/guest-access.ejs
+3	3	views/guest-view-cards.ejs
+3	3	views/home.ejs
+0	46	views/navbar-member.ejs
+63	0	views/navbar.ejs
+3	3	views/other-collections.ejs
+3	2	views/view-account.ejs
+1	29	views/view-card-in-collection.ejs
+3	2	views/view-cards.ejs
+1	23	views/view-collection.ejs
+
+commit 6beda57c2b8be08e36f767f42c767dabee21f88e
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-24T22:50:29+01:00
+
+    users can update their password
+
+59	46	app.js
+60	0	views/card-details.ejs
+1	1	views/home.ejs
+0	3	views/main.ejs
+26	10	views/view-account.ejs
+
+commit dd43a1a3dcae7bba817b03f878935a5c084e1c94
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-23T22:25:45+01:00
+
+    users can delete account, sign out of account, can view all of their accounnt details
+
+186	31	app.js
+-	-	public/HeartBreak.jpeg
+-	-	public/Open_Pokeball.png
+8	0	public/innerstyle.css
+-	-	public/sad_eevee.jpeg
+1	0	styling/style-inner.css
+1	1	views/guest-view-cards.ejs
+15	9	views/home.ejs
+43	0	views/navbar-guest.ejs
+46	0	views/navbar-member.ejs
+1	1	views/other-collections.ejs
+151	0	views/view-account.ejs
+1	1	views/view-card-in-collection.ejs
+4	9	views/view-cards.ejs
+14	5	views/view-collection.ejs
+
+commit 67e8555294a06f13e73fe4d606ae11a3beee6c31
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-19T19:40:00+01:00
+
+    gives guest users ability to filter, starts to allow all users to filter cards
+
+154	17	app.js
+105	5	views/guest-view-cards.ejs
+
+commit cf1300dfae30e4947daed5358ce53bed761afb90
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-19T14:41:11+01:00
+
+    allows members to rate other collections and view average rating
+
+95	10	app.js
+8	0	styling/style-inner.css
+6	3	views/other-collections.ejs
+31	5	views/view-card-in-collection.ejs
+
+commit e0926a0ff159e530502ab3a56e8f0a53f120b379
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-18T23:12:51+01:00
+
+    adds ability for users to view cards in other users collections
+
+132	25	app.js
+-	-	public/Poke_Ball.webp
+7	1	views/guest-access.ejs
+82	58	views/guest-view-cards.ejs
+38	19	views/other-collections.ejs
+1	1	views/sign-up.ejs
+100	0	views/view-card-in-collection.ejs
+8	2	views/view-cards.ejs
+1	3	views/view-collection.ejs
+
+commit 40ec7634faabd70191971dccd1d24dfa2c81e70a
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-18T13:48:57+01:00
+
+    allows users to add profile picture to account. updates viewing cards interface
+
+70	30	app.js
+19	1	public/innerstyle.css
+2	1	styling/style-inner.css
+49	0	views/guest-access.ejs
+91	0	views/guest-view-cards.ejs
+26	19	views/home.ejs
+1	1	views/main.ejs
+3	4	views/other-collections.ejs
+13	39	views/sign-up.ejs
+44	75	views/view-cards.ejs
+88	93	views/view-collection.ejs
+
+commit 7eea83fdaecf61f0a5777712896026121aece124
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-17T22:25:02+01:00
+
+    users can add cards to their collection, remove cards from collection, and collections are automatically added when they create an account. profile pictures have been added but pending some bug fixes.
+
+132	14	app.js
+4	0	public/innerstyle.css
+21	0	public/mystyle.css
+1	1	views/home.ejs
+60	0	views/other-collections.ejs
+54	4	views/sign-up.ejs
+11	5	views/view-cards.ejs
+7	2	views/view-collection.ejs
+
+commit a6921ba31d79d933ffa02828e90e98577d086350
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-16T21:15:44+01:00
+
+    allows users to create an account, authenticates user logins, allows users to view collections
+
+92	29	app.js
+510	6	package-lock.json
+1	0	package.json
+5	9	views/home.ejs
+3	15	views/login.ejs
+39	30	views/sign-up.ejs
+22	11	views/view-cards.ejs
+106	0	views/view-collection.ejs
+
+commit dbdfee8e97010dcadd519de3861c1d8622f19370
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-15T22:02:14+01:00
+
+    adds data from updated database design. starts to use authentication
+
+80	85	app.js
+180	12	package-lock.json
+4	1	package.json
+25	10	views/home.ejs
+6	10	views/login.ejs
+83	42	views/view-cards.ejs
+
+commit e6d79066b26a9c7bcd1fe629f9f2627c53be0be4
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-05T22:31:37+01:00
+
+    uses boostrap 5.0.2
+
+2	1	app.js
+7	12	public/mystyle.css
+1	1	views/home.ejs
+43	22	views/login.ejs
+29	22	views/main.ejs
+33	24	views/sign-up.ejs
+
+commit 56f5ffac2d29d4dc6f7072c13924a1f7ca2d2c78
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-01T13:14:39+01:00
+
+    some changes including bootstrap, ejs and using an api for card data
+
+132	0	app.js
+-	-	background-2.webp
+-	-	images/Pokemon-Logo.jpeg
+-	-	images/pokemon-background.jpeg
+1281	0	package-lock.json
+20	0	package.json
+-	-	images/Pokémon_Logo.png => public/Pokemon_Logo.png
+-	-	{images => public}/background-2.png
+12	0	public/mystyle.css
+0	0	{pages => ss/pages}/login.html
+1	1	{pages => ss/pages}/sign-up.html
+0	0	views/card-details.ejs
+40	0	views/home.ejs
+48	0	views/login.ejs
+45	0	views/main.ejs
+42	0	views/sign-up.ejs
+53	0	views/view-cards.ejs
+
+commit 847158481c6039cf4a461ac47acdd56fd9c9f5b6
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-04-01T13:13:22+01:00
+
+    add gitignore with node modules
+
+1	0	.gitignore
+
+commit 9c9e7e5471b479f18c6038c3953b0ce162bf7177
+Author: aoife <amulvenna10@qub.ac.uk>
+Date:   2024-03-26T13:00:12+00:00
+
+    using bootstrap for ui
+
+0	0	app.js
+10	9	guest-views/home.html
+2	2	index.html
+21	10	pages/login.html
+73	37	styling/styles.css
+0	0	views/view-cards.ejs
+
+commit 8d7792b97001967a4736727f1a286674453e48f2
+Author: Aoife Mulvenna <aoifem@aoifes-mbp.home>
+Date:   2024-02-14T11:00:49+00:00
+
+    all pages on list added
+
+65	0	guest-views/guest-about.html
+44	0	guest-views/guest-view-cards.html
+6	5	guest-views/home.html
+64	0	member-views/about.html
+69	0	member-views/member-home.html
+50	0	member-views/my-cards.html
+50	0	member-views/oponent-collect.html
+50	0	member-views/view-cards.html
+50	0	member-views/wishlist.html
+1	1	pages/login.html
+37	4	styling/style-inner.css
+2	1	styling/styles.css
+
+commit 73a4d0b9529f2c2a7e275755a03ede2f7ed90094
+Author: Aoife Mulvenna <aoifem@Aoifes-MacBook-Pro.local>
+Date:   2024-02-11T22:41:02+00:00
+
+    all external pages added with some css unfinalised.
+
+3	0	.vscode/settings.json
+-	-	background-2.webp
+64	0	guest-views/home.html
+-	-	images/Pokémon_Logo.png
+-	-	images/background-2.png
+-	-	images/pokemon-background.jpeg
+24	6	index.html
+37	0	pages/login.html
+39	0	pages/sign-up.html
+53	0	styling/style-inner.css
+158	14	styling/styles.css
+
+commit 6c4d85580160eeeee6c59a019068aa86c64230bb
+Author: Aoife Mulvenna <aoifem@Aoifes-MacBook-Pro.local>
+Date:   2024-02-06T09:41:31+00:00
+
+    added pokemon image
+
+-	-	images/Pokemon-Logo.jpeg
+3	1	index.html
+
+commit 4b3ccdcd4d21ad9ac2b18f01886f5f2a70b95e02
+Author: Aoife Mulvenna <aoifem@aoifes-mbp.home>
+Date:   2024-02-05T19:25:59+00:00
+
+    style sheet for front page
+
+2	2	README.md
+21	0	index.html
+0	0	pages/login.html
+0	0	pages/sign-up.html
+22	0	styling/styles.css
+
+commit 43a4865978b8aa547aa61a32c4451275030b7566
+Author: aoife-mulvennna <144178939+aoife-mulvennna@users.noreply.github.com>
+Date:   2024-02-05T19:18:36+00:00
+
+    Initial commit
+
+2	0	README.md

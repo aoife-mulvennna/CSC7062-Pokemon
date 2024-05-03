@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>View Cards</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
-        integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Tradecard | <%=collectionName%></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="/innerstyle.css">
 </head>
 
@@ -78,7 +78,7 @@
                                         </li>
                                         <%}%>
 
-                                            <li><strong class="title">Attack </strong>
+                                            <li><strong class="title">Top Attack: </strong>
                                                 <%= card.attack_name %>        
                                              
                                                 <% if (card.attack_description !=null && card.attack_description !==undefined){%>
@@ -88,7 +88,7 @@
                                                          |      Damage:  <%= card.attack_damage %>
                                                     <%}%>
                                             </li>
-                                            <li><strong class="title">Weakness </strong>
+                                            <li><strong class="title">Weakness: </strong>
                                                 <%= card.weakness_type%> <%= card.weakness_strength%> 
                                             </li>
                                 </ul>

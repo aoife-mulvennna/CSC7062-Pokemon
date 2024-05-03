@@ -4,12 +4,9 @@ const app = express();
 const mysql = require('mysql2');
 
 const bcrypt = require('bcrypt');
-
 app.set('view engine', 'ejs');
-
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
-
 const cookieParser = require('cookie-parser');
 const sessions = require('express-session');
 const moment = require('moment');
@@ -41,28 +38,31 @@ const getUserIdFromSession = (req, res, next) => {
     next(); // Call next to proceed to the next middleware or route handler
 };
 
-//random card of the day function
-function selectRandomCard(callback) {
-    const query = 'SELECT * FROM pokemon_card ORDER BY RAND() LIMIT 1';
-    db.query(query, (err, result) => {
-        if (err) {
-            callback(err, null);
-            return;
-        }
-        const randomCard = result[0];
-        callback(null, randomCard);
+function selectRandomCard() {
+    return new Promise((resolve, reject) => {
+        const query = 'SELECT * FROM pokemon_card ORDER BY RAND() LIMIT 1';
+        db.query(query, (err, result) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            const randomCard = result[0];
+            resolve(randomCard);
+        });
     });
 }
 
-function insertCardOfTheDay(card_id, callback) {
-    const validDate = moment().format('YYYY-MM-DD');
-    const query = 'INSERT INTO card_of_day (card_id, valid_date) VALUES (?, ?)';
-    db.query(query, [card_id, validDate], (err, result) => {
-        if (err) {
-            callback(err);
-            return;
-        }
-        callback(null);
+function insertCardOfTheDay(card_id) {
+    return new Promise((resolve, reject) => {
+        const validDate = moment().format('YYYY-MM-DD');
+        const query = 'INSERT INTO card_of_day (card_id, valid_date) VALUES (?, ?)';
+        db.query(query, [card_id, validDate], (err, result) => {
+            if (err) {
+                reject(err);
+                return;
+            }
+            resolve();
+        });
     });
 }
 
@@ -79,22 +79,22 @@ app.get('/home', async (req, res) => {
     let sess_obj = req.session;
     console.log(sess_obj);
     if (sess_obj.authen) {
-        const uid = sess_obj.authen;
+        const userID = sess_obj.authen;
         try {
             // get user data
             const [userData] = await db.promise().query(
                 `SELECT u.*, pp.profile_picture_url FROM user u 
                 INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id
-                WHERE u.user_id = ?`, [uid]
+                WHERE u.user_id = ?`, [userID]
             );
-           console.log('user data:', userData);
+            console.log('user data:', userData);
             if (!userData) {
                 res.status(404).send("User not found");
                 return;
             }
             // get number of collections
             const [collectionsResult] = await db.promise().query(
-                `SELECT COUNT(*) AS num_collections FROM collection WHERE user_id = ?`, [uid]
+                `SELECT COUNT(*) AS num_collections FROM collection WHERE user_id = ?`, [userID]
             );
             const numCollections = collectionsResult[0].num_collections;
             // get most common Pokémon type
@@ -107,7 +107,7 @@ app.get('/home', async (req, res) => {
                 WHERE c.user_id = ? 
                 GROUP BY pt.pokemon_type_name 
                 ORDER BY type_count DESC 
-                LIMIT 1`, [uid]
+                LIMIT 1`, [userID]
             );
             const mostCommonType = typeResult.length > 0 ? typeResult[0].pokemon_type_name : "No data";
             // Fetch most common Pokémon set
@@ -120,7 +120,7 @@ app.get('/home', async (req, res) => {
                 WHERE c.user_id = ? 
                 GROUP BY ps.pokemon_set_name 
                 ORDER BY set_count DESC 
-                LIMIT 1`, [uid]
+                LIMIT 1`, [userID]
             );
             const mostCommonSet = setResult.length > 0 ? setResult[0].pokemon_set_name : "No data";
             // Calculate rarity score
@@ -137,10 +137,27 @@ app.get('/home', async (req, res) => {
                 INNER JOIN card_collection cc ON c.collection_id = cc.collection_id 
                 INNER JOIN pokemon_card pc ON cc.card_id = pc.pokemon_card_id 
                 INNER JOIN rarity r ON pc.rarity_id = r.rarity_id 
-                WHERE c.user_id = ?`, [uid]
+                WHERE c.user_id = ?`, [userID]
             );
             const rarityScore = rarityResult.length > 0 ? rarityResult[0].rarity_score : 0;
-
+            const [leaderboardResult] = await db.promise().query(
+                `SELECT u.username, SUM(
+                    CASE 
+                        WHEN r.rarity_name = 'Rare' THEN 3
+                        WHEN r.rarity_name = 'Uncommon' THEN 2
+                        WHEN r.rarity_name = 'Common' THEN 1
+                        ELSE 0
+                    END
+                ) AS rarity_score
+                FROM collection c 
+                INNER JOIN user u ON c.user_id = u.user_id
+                INNER JOIN card_collection cc ON c.collection_id = cc.collection_id 
+                INNER JOIN pokemon_card pc ON cc.card_id = pc.pokemon_card_id 
+                INNER JOIN rarity r ON pc.rarity_id = r.rarity_id 
+                GROUP BY u.username
+                ORDER BY rarity_score DESC
+                LIMIT 5`
+            );
             // Check if a card of the day exists for the current date
             const today = moment().format('YYYY-MM-DD');
             const [cardResult] = await db.promise().query(
@@ -154,6 +171,7 @@ app.get('/home', async (req, res) => {
                 const randomCard = await selectRandomCard();
                 await insertCardOfTheDay(randomCard.pokemon_card_id);
 
+
                 res.render('home', {
                     logoPath: 'Pokemon_Logo.png',
                     userdata: userData[0],
@@ -163,10 +181,11 @@ app.get('/home', async (req, res) => {
                     numCollections,
                     mostCommonType,
                     mostCommonSet,
-                    rarityScore
+                    rarityScore,
+                    leaderboard: leaderboardResult
                 });
             } else {
-                console.log('userdata: ',userData)
+                console.log('userdata: ', userData)
                 // If card of day exists for today, display it
                 const cardOfTheDay = cardResult[0];
                 res.render('home', {
@@ -178,7 +197,8 @@ app.get('/home', async (req, res) => {
                     numCollections,
                     mostCommonType,
                     mostCommonSet,
-                    rarityScore
+                    rarityScore,
+                    leaderboard: leaderboardResult
                 });
             }
         } catch (err) {
@@ -194,7 +214,7 @@ app.get('/home', async (req, res) => {
 // renders login
 app.get('/login', (req, res) => {
 
-    res.render('login', { logoPath: 'Pokemon_Logo.png', backgroundPath: 'background-2.png' , errorMessage: null });
+    res.render('login', { logoPath: 'Pokemon_Logo.png', backgroundPath: 'background-2.png', errorMessage: null });
 
 });
 
@@ -212,9 +232,9 @@ app.post('/login', (req, res) => {
         if (results.length === 0) {
             // res.status(401).send('Username or password is incorrect');
             // return;
-            res.render('login', { 
-                logoPath: 'Pokemon_Logo.png', 
-                backgroundPath: 'background-2.png', 
+            res.render('login', {
+                logoPath: 'Pokemon_Logo.png',
+                backgroundPath: 'background-2.png',
                 errorMessage: 'Incorrect username or password. Try again.'
             });
             return;
@@ -236,9 +256,9 @@ app.post('/login', (req, res) => {
             } else {
                 // res.status(401).send('Username or password is incorrect');
                 // res.status(401).json({ error: 'Username or password is incorrect' });
-                res.render('login', { 
-                    logoPath: 'Pokemon_Logo.png', 
-                    backgroundPath: 'background-2.png', 
+                res.render('login', {
+                    logoPath: 'Pokemon_Logo.png',
+                    backgroundPath: 'background-2.png',
                     errorMessage: 'Incorrect username or password. Try again.'
                 });
             }
@@ -316,21 +336,21 @@ app.post('/sign-up', (req, res) => {
 
 app.post('/update-password', (req, res) => {
     let sess_obj = req.session;
-    const uid = sess_obj.authen;
-    console.log('user id=', uid);
+    const userID = sess_obj.authen;
+    console.log('user id=', userID);
 
     const { currentPasswordField, newPasswordField } = req.body;
 
     const userDataQuery = `SELECT * FROM user WHERE user_id = ?`;
 
-    db.query(userDataQuery, [uid], (err, results) => {
+    db.query(userDataQuery, [userID], (err, results) => {
         if (err) {
             console.error('Error querying database: ', err);
             res.status(500).send('Internal Sever Error');
             return;
         }
         if (results.length === 0) {
-            res.status(401).send('There are no accounts found with user id' + uid);
+            res.status(401).send('There are no accounts found with user id' + userID);
             return;
         }
         const hashedPassword = results[0].password;
@@ -350,7 +370,7 @@ app.post('/update-password', (req, res) => {
                         res.send('An error occured while updating the password.');
                     }
                     const updatePassQuery = `UPDATE user SET password = ? WHERE user_id = ?`;
-                    db.query(updatePassQuery, [hashedNewPassword, uid], (err, result) => {
+                    db.query(updatePassQuery, [hashedNewPassword, userID], (err, result) => {
                         if (err) {
                             console.error("Error updating password:", err);
                             return res.status(500).send("An error occurred while updating the password");
@@ -363,60 +383,13 @@ app.post('/update-password', (req, res) => {
                     });
                 })
             } else {
-                res.status(401).send('Current password is incorrect');
+                // res.status(401).send('Current password is incorrect');
             }
         });
     });
 });
 
 
-app.get('/view-collection', (req, res) => {
-    let sess_obj = req.session;
-    const uid = sess_obj.authen;
-
-    const query = ` SELECT  pc.*, ps.pokemon_stage_name, psn.pokemon_set_name, pt.pokemon_type_name, pp.*, r.rarity_name, c.collection_name
-    FROM user u
-    INNER JOIN collection c ON u.user_id = c.user_id
-    INNER JOIN card_collection cc ON c.collection_id = cc.collection_id
-    INNER JOIN pokemon_card pc ON cc.card_id = pc.pokemon_card_id 
-    INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
-    INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-    INNER JOIN pokemon_set psn ON psn.pokemon_set_id = pc.pokemon_set_id
-    INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id
-    INNER JOIN rarity r ON r.rarity_id = pc.rarity_id
-    WHERE u.user_id = ?`;
-
-    db.query(query, [uid], (err, results) => {
-
-        if (err) {
-            console.error("Error getting collection data:", err);
-            res.status(500).send("Internal Server Error");
-            return;
-        }
-        const getUserQuery = `SELECT u.username, pp.profile_picture_url FROM 
-        user u INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id 
-        WHERE u.user_id = ?`
-
-        db.query(getUserQuery, [uid], (err, userResults) => {
-            if (err) {
-                console.error("Error fetching user data:", err);
-                res.status(500).send("Internal Server Error");
-                return;
-            }
-
-            if (userResults.length === 0) {
-                res.status(404).send("User not found");
-                return;
-            }
-            const userData = userResults[0];
-            const collectionName = results[0].collection_name;
-
-
-            res.render('view-collection', { cards: results, logoPath: 'Pokemon_Logo.png', sess_obj, userdata: userData, currentPage: req.path, collectionName });
-        });
-
-    });
-});
 
 app.get('/other-collections', (req, res) => {
     let sess_obj = req.session;
@@ -557,9 +530,8 @@ app.get('/view-card-in-collection', (req, res) => {
 
 
 app.post('/add-to-collection', getUserIdFromSession, (req, res) => {
-    // let sess_obj = req.session;
-    // const uid = sess_obj.authen;
-    const uid = req.userId;
+
+    const userID = req.userId;
     const cardID = req.body.card_id;
     const collectionID = req.body.collection_id;
     console.log('collection id', collectionID);
@@ -570,7 +542,7 @@ app.post('/add-to-collection', getUserIdFromSession, (req, res) => {
             if (err.code === 'ER_DUP_ENTRY') { // Handle duplicate entry error
                 // res.status(400).send('This card is already in your collection');
                 // res.status(400).json({ message: 'This card is already in your collection' });
-    
+
             } else {
                 console.error("Error adding to collection:", err);
                 res.status(500).send('Internal Server Error');
@@ -590,8 +562,6 @@ app.post('/remove-from-collection', (req, res) => {
     const cardId = req.body.card_id;
     const collectionName = req.body.collection_name;
     const collectionId = req.body.collection_id;
-    console.log('name of collection:', collectionName);
-    console.log('collectionId:', collectionId);
     if (!userId || !collectionId) {
         console.error("User ID or Collection ID is undefined");
         res.status(400).send('Bad Request');
@@ -667,104 +637,73 @@ app.get('/ratings/:collectionId', (req, res) => {
 app.get('/view-account', (req, res) => {
 
     let sess_obj = req.session;
-    const uid = sess_obj.authen;
-    console.log('user id=', uid);
+    const userID = sess_obj.authen;
+    console.log('user id=', userID);
     const getAccountQuery = `SELECT u.*, pp.profile_picture_url FROM user u INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id WHERE user_id = ?`;
 
-    db.query(getAccountQuery, [uid], (err, accountDetails) => {
+    db.query(getAccountQuery, [userID], (err, accountDetails) => {
         if (err) {
             console.error("Error finding account details", err);
             res.status(500).send('Internal Server Error');
             return;
         }
         const userData = accountDetails[0];
-            res.render('view-account', { details: accountDetails, logoPath: 'Pokemon_Logo.png', sess_obj, userdata: userData, currentPage: req.path })
+        res.render('view-account', { details: accountDetails, logoPath: 'Pokemon_Logo.png', sess_obj, userdata: userData, currentPage: req.path })
     });
 });
 
 
 app.post('/delete-account', (req, res) => {
     let sess_obj = req.session;
-    const uid = sess_obj.authen;
+    const userID = sess_obj.authen;
 
-    const deleteCardCollectionQuery = `DELETE FROM card_collection WHERE collection_id = (SELECT collection_id FROM collection WHERE user_id = ?)`;
-    // const collectionId = `SELECT collection_id FROM collection WHERE user_id = "${uid}"`;
-    db.query(deleteCardCollectionQuery, [uid], (err, result) => {
-        // if (err) throw err;
+    const deleteCardWishlistQuery = `DELETE FROM card_wishlist WHERE wishlist_id = (SELECT wishlist_id FROM wishlist WHERE user_id = ?)`;
+    db.query(deleteCardWishlistQuery, [userID], (err, result) => {
+        if (err) throw err;
 
-        const deleteCollectionQuery = `DELETE FROM collection WHERE user_id = ?`;
-        db.query(deleteCollectionQuery, [uid], (err, result) => {
+        const deleteWishlistQuery = `DELETE FROM wishlist WHERE user_id = ?`;
+        db.query(deleteWishlistQuery, [userID], (err, result) => {
 
-            // if (err) throw err;
-            const deleteRatingQuery = `DELETE FROM rating WHERE rating_user_id = ?`;
+            const deleteCardCollectionQuery = `DELETE FROM card_collection WHERE collection_id = (SELECT collection_id FROM collection WHERE user_id = ?)`;
 
-            db.query(deleteRatingQuery, [uid], (err, result) => {
+            db.query(deleteCardCollectionQuery, [userID], (err, result) => {
+                if (err) throw err;
 
-                // if (err) throw err;
+                const deleteCollectionQuery = `DELETE FROM collection WHERE user_id = ?`;
+                db.query(deleteCollectionQuery, [userID], (err, result) => {
 
-                const deleteAccountQuery = 'DELETE FROM user WHERE user_id = ?';
-                db.query(deleteAccountQuery, [uid], (err, result) => {
-                    if (err) {
-                        console.error("Error deleting account", err);
-                        res.status(500).send('Internal Server Error');
-                    } else {
-                        res.send('Account deleted successfully');
-                    }
+                    if (err) throw err;
+                    const deleteRatingQuery = `DELETE FROM rating WHERE rating_user_id = ?`;
 
-                });
+                    db.query(deleteRatingQuery, [userID], (err, result) => {
 
+                        if (err) throw err;
+
+                        const deleteAccountQuery = 'DELETE FROM user WHERE user_id = ?';
+                        db.query(deleteAccountQuery, [userID], (err, result) => {
+                            if (err) {
+                                console.error("Error deleting account", err);
+                                res.status(500).send('Internal Server Error');
+                            } else {
+                                res.render('main');
+                            }
+
+                        });
+
+                    })
+                })
             })
-        })
-    })
+        });
+    });
 });
-
-// app.get('/browse-cards/sort', (req, res) => {
-
-//     const sort = req.query.sort;
-//     const order = req.query.value === 'asc' ? 'ASC' : 'DESC';
-
-//     let sortQuery = ` SELECT pc.pokemon_card_id, pc.pokemon_name, pt.pokemon_type_name, pc.url_img, pc.hp, ps.pokemon_stage_name, pc.attack, r.rarity_name, pc.weakness, psn.pokemon_set_name, pc.evolve_from 
-//     FROM pokemon_card pc 
-//     INNER JOIN pokemon_type pt ON pt.pokemon_type_id = pc.pokemon_type_id
-//     INNER JOIN pokemon_stage ps ON ps.pokemon_stage_id = pc.pokemon_stage_id
-//     INNER JOIN pokemon_set psn ON psn.pokemon_set_id = pc.pokemon_set_id
-//     INNER JOIN rarity r ON r.rarity_id = pc.rarity_id ORDER BY ${sort} ${order}`;
-
-//     db.query(sortQuery, (err, result) => {
-//         // if (err) throw err;
-
-//         const stageQuery = `SELECT * FROM pokemon_stage`;
-//         db.query(stageQuery, (err, stageResults) => {
-//             // if (err) throw err;
-
-//             const rarityQuery = `SELECT * FROM rarity`;
-//             db.query(rarityQuery, (err, rarityResults) => {
-//                 // if (err) throw err;
-//                 const typeQuery = `SELECT * FROM pokemon_type`;
-//                 db.query(typeQuery, (err, typeResults) => {
-//                     // if (err) throw err;
-//                     const setQuery = `SELECT * FROM pokemon_set`;
-//                     db.query(setQuery, (err, setResults) => {
-//                         // if (err) throw err;
-//                         res.render('browse-cards', { cards: result, sess_obj: false, currentPage: req.path, stageResults, rarityResults, typeResults, setResults });
-//                     });
-//                 })
-//             })
-//         })
-//     });
-// });
 
 app.get('/browse-cards', (req, res) => {
 
     let sess_obj = req.session;
     const selectedRarities = req.query.rarity;
-    console.log('Selected rarities:', selectedRarities);
     const selectedStages = req.query.stage;
-    console.log('Selected stages:', selectedStages);
     const selectedSets = req.query.set;
-    console.log('Selected sets:', selectedSets);
     const selectedTypes = req.query.type;
-    console.log('Selected types:', selectedTypes);
 
     const searchTerm = req.query.search;
     const sort = req.query.sort;
@@ -814,7 +753,7 @@ app.get('/browse-cards', (req, res) => {
         query += ` ORDER BY ${sort} ${order}`;
     }
     if (searchTerm) {
-        query += ` AND pc.pokemon_name LIKE '%${searchTerm}%' OR pt.pokemon_type_name LIKE '%${searchTerm}%' OR psn.pokemon_set_name LIKE '%${searchTerm}%'`;
+        query += ` AND pc.pokemon_name LIKE '%${searchTerm}%' OR pt.pokemon_type_name LIKE '%${searchTerm}%' OR psn.pokemon_set_name LIKE '%${searchTerm}%' OR pc.evolves_from LIKE '%${searchTerm}%'`;
     }
     console.log('Generated SQL Query:', query);
     db.query(query, (err, results) => {
@@ -837,11 +776,11 @@ app.get('/browse-cards', (req, res) => {
                             console.log('results: ', results)
                             res.render('browse-cards', { cards: results, sess_obj: false, currentPage: req.path, stageResults, rarityResults, typeResults, setResults, numberResults });
                         } else {
-                            const uid = sess_obj.authen;
+                            const userID = sess_obj.authen;
                             const getUserQuery = `SELECT u.username, pp.profile_picture_url FROM 
         user u INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id 
         WHERE u.user_id = ?`;
-                            db.query(getUserQuery, [uid], (err, userResults) => {
+                            db.query(getUserQuery, [userID], (err, userResults) => {
                                 if (err) {
                                     console.error("Error fetching user data:", err);
                                     res.status(500).send("Internal Server Error");
@@ -854,7 +793,7 @@ app.get('/browse-cards', (req, res) => {
                                 const userData = userResults[0];
 
                                 const collectionNameQuery = `SELECT collection.collection_id, collection.collection_name FROM collection WHERE user_id = ?`;
-                                db.query(collectionNameQuery, [uid], (err, collectionNameResults) => {
+                                db.query(collectionNameQuery, [userID], (err, collectionNameResults) => {
                                     // if (err) throw err;
 
                                     res.render('browse-cards', { cards: results, sess_obj: true, userdata: userData, currentPage: req.path, stageResults, rarityResults, typeResults, setResults, collectionNameResults, numberResults });
@@ -870,9 +809,9 @@ app.get('/browse-cards', (req, res) => {
 
 app.get('/create-collection', (req, res) => {
     let sess_obj = req.session;
-    const uid = sess_obj.authen;
+    const userID = sess_obj.authen;
     const getUserData = `SELECT user.username, pp.profile_picture_url FROM user INNER JOIN profile_picture pp ON user.profile_picture_id = pp.profile_picture_id WHERE user.user_id = ?`;
-    db.query(getUserData, [uid], (err, userResults) => {
+    db.query(getUserData, [userID], (err, userResults) => {
         res.render('create-collection', { sess_obj: true, currentPage: req.path, userdata: userResults });
     })
 
@@ -880,10 +819,10 @@ app.get('/create-collection', (req, res) => {
 
 app.post('/create-collection', (req, res) => {
     let sess_obj = req.session;
-    let uid = sess_obj.authen;
+    let userID = sess_obj.authen;
     let collectionName = req.body.collectionNameField;
 
-    db.query('INSERT INTO collection (collection_name, user_id) VALUES (?, ?)', [collectionName, uid], (err, result) => {
+    db.query('INSERT INTO collection (collection_name, user_id) VALUES (?, ?)', [collectionName, userID], (err, result) => {
         if (err) {
             // Handle error
             console.error(err);
@@ -898,7 +837,7 @@ app.post('/create-collection', (req, res) => {
 
 app.get('/view-wishlist', (req, res) => {
     let sess_obj = req.session;
-    const uid = sess_obj.authen;
+    const userID = sess_obj.authen;
     const query = ` SELECT  pc.*, ps.pokemon_stage_name, psn.pokemon_set_name, pt.pokemon_type_name, pp.*, r.rarity_name, w.*, wn.*
     FROM user u
     INNER JOIN wishlist w ON u.user_id = w.user_id
@@ -912,7 +851,7 @@ app.get('/view-wishlist', (req, res) => {
     INNER JOIN weakness wn ON wn.card_id = pc.pokemon_card_id
     WHERE u.user_id = ?`;
 
-    db.query(query, [uid], (err, results) => {
+    db.query(query, [userID], (err, results) => {
 
         if (err) {
             console.error("Error getting wishlist data:", err);
@@ -923,7 +862,7 @@ app.get('/view-wishlist', (req, res) => {
         user u INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id 
         WHERE u.user_id = ?`
 
-        db.query(getUserQuery, [uid], (err, userResults) => {
+        db.query(getUserQuery, [userID], (err, userResults) => {
             if (err) {
                 console.error("Error fetching user data:", err);
                 res.status(500).send("Internal Server Error");
@@ -943,11 +882,11 @@ app.get('/view-wishlist', (req, res) => {
 });
 
 app.post('/add-to-wishlist', getUserIdFromSession, (req, res) => {
-    const uid = req.userId;
+    const userID = req.userId;
     const cardID = req.body.card_id;
 
     const wishlist_query = `SELECT wishlist_id FROM wishlist WHERE user_id = ?`;
-    db.query(wishlist_query, [uid], (err, results) => {
+    db.query(wishlist_query, [userID], (err, results) => {
         if (err) {
             console.error('Error retrieving wishlist ID:', err);
             res.status(500).send('Internal Server Error');
@@ -967,7 +906,7 @@ app.post('/add-to-wishlist', getUserIdFromSession, (req, res) => {
             if (err) {
                 if (err.code === 'ER_DUP_ENTRY') { // Handle duplicate entry error
                     // res.status(400).send('This card is already in your collection');
-                    res.status(400).json({ message: 'This card is already in your wishlist' });
+                    // res.status(400).json({ message: 'This card is already in your wishlist' });
                 } else {
                     console.error("Error adding to wishlist:", err);
                     res.status(500).send('Internal Server Error');
@@ -1001,41 +940,6 @@ app.post('/remove-from-wishlist', (req, res) => {
         }
     });
 });
-
-app.post('/delete-collection', (req, res) => {
-    const collectionId = req.body.collectionId;
-
-    const deleteCardCollectionQuery = `DELETE FROM card_collection WHERE collection_id = ?`;
-    const deleteCollectionRatingQuery = `DELETE FROM rating WHERE collection_id = ?`;
-    const deleteCollectionQuery = `DELETE FROM collection WHERE collection_id = ?`;
-
-    db.query(deleteCardCollectionQuery, [collectionId], (err, cardCollectionDeleteResult) => {
-        if (err) {
-            console.error("Error deleting card collection items:", err);
-            res.status(500).send('Internal Server Error');
-            return;
-        }
-        db.query(deleteCollectionRatingQuery, [collectionId], (err, collectionRatingDeleteResult) => {
-            if (err) {
-                console.error("Error deleting collection rating:", err);
-                res.status(500).send('Internal Server Error');
-                return
-            }
-
-            db.query(deleteCollectionQuery, [collectionId], (err, collectionDeleteResult) => {
-                if (err) {
-                    console.error("Error deleting collection:", err);
-                    res.status(500).send('Internal Server Error');
-                    return;
-                }
-
-                console.log('collection deleted successfully');
-                res.redirect(req.get('referer'));
-            });
-        })
-    });
-});
-
 
 app.get('/view-my-collections', (req, res) => {
     let sess_obj = req.session;
@@ -1102,12 +1006,12 @@ app.get('/view-card-details', (req, res) => {
         }
         console.log('sess_obj.authen:', sess_obj.authen);
         if (sess_obj.authen) {
-            const uid = sess_obj.authen;
-            console.log('uid:', uid)
+            const userID = sess_obj.authen;
+            console.log('userID:', userID)
             const getUserQuery = `SELECT u.username, pp.profile_picture_url FROM 
 user u INNER JOIN profile_picture pp ON pp.profile_picture_id = u.profile_picture_id 
 WHERE u.user_id = ?`;
-            db.query(getUserQuery, [uid], (err, userResults) => {
+            db.query(getUserQuery, [userID], (err, userResults) => {
                 if (err) {
                     console.error("Error fetching user data:", err);
                     res.status(500).send("Internal Server Error");
@@ -1119,7 +1023,7 @@ WHERE u.user_id = ?`;
                 }
                 const userData = userResults[0];
                 const collectionNameQuery = `SELECT collection.collection_id, collection.collection_name FROM collection WHERE user_id = ?`;
-                db.query(collectionNameQuery, [uid], (err, collectionNameResults) => {
+                db.query(collectionNameQuery, [userID], (err, collectionNameResults) => {
 
                     res.render('card-details', { details: results[0], userdata: userData, currentPage: req.path, sess_obj: true, cardID, collectionNameResults });
                 });
